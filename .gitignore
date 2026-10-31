@@ -1,0 +1,8 @@
+build/
+.idea/
+*~
+
+.fuse_hidden*
+.Trash-*
+.nfs*
+
