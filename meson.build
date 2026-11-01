@@ -11,8 +11,6 @@ pkgconfig = import('pkgconfig')
 valac = meson.get_compiler('vala')
 cc = meson.get_compiler('c')
 
-glib_dep = dependency('glib-2.0')
-
 tree_sitter_dep = dependency('tree-sitter')
 tree_sitter_lib = cc.find_library('tree-sitter')
 
@@ -56,20 +54,24 @@ if not meson.is_subproject()
     )
 endif
 
-tree_sitter_vala_vapi_test = executable(
-    'tree-sitter-vala-vapi-test',
-    'test/vapi.vala',
-    dependencies: [tree_sitter_vala_dep, glib_dep],
-)
+if get_option('tests')
+    glib_dep = dependency('glib-2.0')
 
-test('vapi', tree_sitter_vala_vapi_test, protocol: 'tap')
-
-tree_sitter_bin = find_program('tree-sitter', required: false)
-if tree_sitter_bin.found()
-    test(
-        'corpus',
-        tree_sitter_bin,
-        args: ['test'],
-        workdir: meson.current_source_dir(),
+    tree_sitter_vala_vapi_test = executable(
+        'tree-sitter-vala-vapi-test',
+        'test/vapi.vala',
+        dependencies: [tree_sitter_vala_dep, glib_dep],
     )
+
+    test('vapi', tree_sitter_vala_vapi_test, protocol: 'tap')
+
+    tree_sitter_bin = find_program('tree-sitter', required: false)
+    if tree_sitter_bin.found()
+        test(
+            'corpus',
+            tree_sitter_bin,
+            args: ['test'],
+            workdir: meson.current_source_dir(),
+        )
+    endif
 endif
