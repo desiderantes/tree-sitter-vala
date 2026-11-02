@@ -8,16 +8,48 @@ namespace Attributes {
 }
 
 ---
+
 (source_file
   (namespace_member
-    (attribute (identifier))
-    (attribute (identifier)
-      (attribute_argument
-        (identifier)
-        (literal (string)))
-      (attribute_argument
-        (identifier)
-        (literal (boolean))))
-    (attribute (identifier))
+    (attribute
+      (identifier))
+    (attribute
+      (identifier)
+      (attribute_argument_list
+        (attribute_argument
+          (identifier)
+          (literal
+            (string)))
+        (attribute_argument
+          (identifier)
+          (literal
+            (boolean)))))
+    (attribute
+      (identifier))
     (namespace_declaration
-      (symbol (identifier)))))
+      (symbol
+        (identifier)))))
+
+===================================
+Attributes with empty argument list
+===================================
+
+[SimpleType ()]
+[Compact ()]
+class Foo {
+}
+
+---
+
+(source_file
+  (namespace_member
+    (attribute
+      (identifier)
+      (attribute_argument_list))
+    (attribute
+      (identifier)
+      (attribute_argument_list))
+    (class_declaration
+      (unqualified_type
+        (symbol
+          (identifier))))))

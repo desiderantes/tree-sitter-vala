@@ -63,15 +63,40 @@ if get_option('tests')
         dependencies: [tree_sitter_vala_dep, glib_dep],
     )
 
-    test('vapi', tree_sitter_vala_vapi_test, protocol: 'tap')
+    test('vapi-usage', tree_sitter_vala_vapi_test, protocol: 'tap', suite: 'vapi')
 
     tree_sitter_bin = find_program('tree-sitter', required: false)
     if tree_sitter_bin.found()
+        corpus_files = files(
+            'test/corpus/attributes.txt',
+            'test/corpus/expressions.txt',
+            'test/corpus/namespaces.txt',
+            'test/corpus/preprocessor.txt',
+            'test/corpus/strings.txt',
+            'test/corpus/using-directives.txt',
+        )
+
+        corpus_stamp = custom_target(
+            'corpus-stamp',
+            input: corpus_files,
+            output: 'corpus.stamp',
+            command: [find_program('touch'), '@OUTPUT@'],
+            build_by_default: false,
+        )
+
         test(
             'corpus',
             tree_sitter_bin,
-            args: ['test'],
+            args: [
+                'test',
+                '--lib-path',
+                tree_sitter_vala_lib.full_path(),
+                '--lang-name',
+                'vala',
+            ],
             workdir: meson.current_source_dir(),
+            suite: 'grammar',
+            depends: [tree_sitter_vala_lib, corpus_stamp],
         )
     endif
 endif

@@ -1204,7 +1204,7 @@
       "required": true,
       "types": [
         {
-          "type": "attribute_argument",
+          "type": "attribute_argument_list",
           "named": true
         },
         {
@@ -1376,6 +1376,21 @@
         },
         {
           "type": "yield_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "attribute_argument_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "attribute_argument",
           "named": true
         }
       ]

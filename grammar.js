@@ -57,7 +57,13 @@ module.exports = grammar({
 
     attribute: $ => seq(
       $.identifier,
-      optional(seq('(', $.attribute_argument, repeat(seq(',', $.attribute_argument)), ')'))
+      optional($.attribute_argument_list)
+    ),
+
+    attribute_argument_list: $ => seq(
+      '(',
+      optional(seq($.attribute_argument, repeat(seq(',', $.attribute_argument)))),
+      ')'
     ),
 
     attribute_argument: $ => seq(
