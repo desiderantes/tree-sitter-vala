@@ -81,3 +81,43 @@ public sealed class Foo : Object {
           (symbol
             (identifier))
           (block))))))
+
+=======================================
+Method pre- and post-conditions contract
+=======================================
+
+int bar (int i) requires (i == 23) ensures (i == 42) {
+    return i;
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type
+        (symbol
+          (identifier)))
+      (symbol
+        (identifier))
+      (parameter
+        (type
+          (symbol
+            (identifier)))
+        (identifier))
+      (contract_clause
+        (equality_expression
+          (member_access_expression
+            (identifier))
+          (literal
+            (integer))))
+      (contract_clause
+        (equality_expression
+          (member_access_expression
+            (identifier))
+          (literal
+            (integer))))
+      (block
+        (return_statement
+          (member_access_expression
+            (identifier)))))))

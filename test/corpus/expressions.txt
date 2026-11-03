@@ -273,3 +273,73 @@ void main() {
                   (argument
                     (literal
                       (integer))))))))))))
+
+===============================================
+Binary, octal, hex floats and regex expressions
+===============================================
+
+void main () {
+    const string GIR_SUFFIX = "gir-1.0";
+    int a = 0b1001;
+    int b = 0o644;
+    double d = 0x2022.1209p4;
+    int8 s = +127;
+    var r = /mon(str.*o)n/i;
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (string))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (real))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (unary_plus_expression
+              (literal
+                (integer)))))
+        (local_declaration
+          (type)
+          (assignment
+            (identifier)
+            (literal
+              (regex))))))))

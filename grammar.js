@@ -198,6 +198,7 @@ module.exports = grammar({
     sizeof_expression: $ => prec.right(14, seq('sizeof', '(', $.type, ')')),
     dereferencing_expression: $ => prec.right(14, seq('*', $._left_contained_expression)),
     addressof_expression: $ => prec.right(14, seq('&', $._left_contained_expression)),
+    unary_plus_expression: $ => prec.right(14, seq('+', $._left_contained_expression)),
     arithmetic_negation_expression: $ => prec.right(14, seq('-', $._left_contained_expression)),
     prefix_expression: $ => prec.right(14, seq(choice('++', '--'), $._left_contained_expression)),
     bitwise_negation_expression: $ => prec.right(14, seq('~', $._left_contained_expression)),
@@ -205,6 +206,7 @@ module.exports = grammar({
     _unary_expression: $ => prec.right(14, choice(
         $.dereferencing_expression,
         $.addressof_expression,
+        $.unary_plus_expression,
         $.arithmetic_negation_expression,
         $.prefix_expression,
         $.bitwise_negation_expression,
@@ -282,6 +284,8 @@ module.exports = grammar({
     integer: $ => token(seq(
       choice(
         /0[xX][0-9a-fA-F]+/,
+        /0[bB][01]+/,
+        /0[oO][0-7]+/,
         /[0-9]+/
       ),
       optional(choice(
@@ -291,10 +295,11 @@ module.exports = grammar({
     )),
     null: $ => 'null',
     real: $ => token(choice(
+      /0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]+)?[pP][+-]?[0-9]+[fFdD]?/,
       /([0-9]+\.[0-9]+([eE][+-]?[0-9]+)?|[0-9]+[eE][+-]?[0-9]+)[fFdD]?/,
       /[0-9]+[fFdD]/
     )),
-    regex: $ => /\/([^\\\/\n]|\\[\\\/A-z0|\[\]^$?.(){}+\-*])+\/[gmxsu]*/,
+    regex: $ => /\/([^/\\\n]|\\.)+\/[imsxog]*/,
     string: $ => seq(
       '"',
       repeat(choice(
@@ -569,8 +574,15 @@ module.exports = grammar({
       comma_sep(field('parameter', $.parameter)),
       ')',
       optional(seq('throws', comma_sep1(field('error_type', $.type)))),
-      optional(seq(choice('requires', 'ensures'), '(', field('condition', $._expression), ')')),
+      repeat($.contract_clause),
       field('body', choice($.block, ';'))
+    ),
+
+    contract_clause: $ => seq(
+      choice('requires', 'ensures'),
+      '(',
+      field('condition', $._expression),
+      ')'
     ),
 
     delegate_declaration_modifier: $ => choice(
@@ -607,7 +619,7 @@ module.exports = grammar({
       comma_sep(field('parameter', $.parameter)),
       ')',
       optional(seq('throws', comma_sep1(field('error_type', $.type)))),
-      optional(seq(choice('requires', 'ensures'), '(', field('condition', $._expression), ')')),
+      repeat($.contract_clause),
       field('body', choice($.block, ';'))
     ),
 
@@ -713,12 +725,14 @@ module.exports = grammar({
     ),
 
     local_declaration: $ => seq(
+      optional('const'),
       field('type', $.type),
       comma_sep1(field('declarator', $.assignment)),
       ';'
     ),
 
     local_function_declaration: $ => seq(
+        repeat(field('modifier', choice('static', 'extern'))),
         field('type', $.type),
         field('name', $.identifier),
         '(',
