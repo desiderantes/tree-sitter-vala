@@ -1,3 +1,19 @@
+function comma_sep1(rule) {
+  return seq(rule, repeat(seq(',', rule)));
+}
+
+function comma_sep(rule) {
+  return optional(comma_sep1(rule));
+}
+
+function comma_sep1_trailing(rule) {
+  return seq(rule, repeat(seq(',', rule)), optional(','));
+}
+
+function comma_sep_trailing(rule) {
+  return optional(comma_sep1_trailing(rule));
+}
+
 module.exports = grammar({
   name: 'vala',
 
@@ -19,8 +35,7 @@ module.exports = grammar({
 
     using_directive: $ => seq(
       'using',
-      $.symbol,
-      repeat(seq(',', $.symbol)),
+      comma_sep1($.symbol),
       ';'
     ),
 
@@ -50,8 +65,7 @@ module.exports = grammar({
 
     _attribute_list: $ => seq(
       '[',
-      $.attribute,
-      repeat(seq(',', $.attribute)),
+      comma_sep1($.attribute),
       ']'
     ),
 
@@ -62,7 +76,7 @@ module.exports = grammar({
 
     attribute_argument_list: $ => seq(
       '(',
-      optional(seq($.attribute_argument, repeat(seq(',', $.attribute_argument)))),
+      comma_sep($.attribute_argument),
       ')'
     ),
 
@@ -140,8 +154,7 @@ module.exports = grammar({
 
     element_access: $ => seq(
       '[',
-      choice($._expression, $.slice_expression),
-      repeat(seq(',', choice($._expression, $.slice_expression))),
+      comma_sep1(choice($._expression, $.slice_expression)),
       ']'
     ),
 
@@ -164,7 +177,7 @@ module.exports = grammar({
         $._contained_expression
       ),
       '(',
-      optional(seq($.argument, repeat(seq(',', $.argument)))),
+      comma_sep($.argument),
       ')'
     ),
 
@@ -173,7 +186,7 @@ module.exports = grammar({
     lambda_expression: $ => seq(
       choice(
         $.identifier,
-        seq('(', optional(seq($.identifier, repeat(seq(',', $.identifier)))), ')')
+        seq('(', comma_sep($.identifier), ')')
       ),
       '=>',
       choice($._expression, $.block)
@@ -234,14 +247,14 @@ module.exports = grammar({
       $.type,
       optional(seq('.', $.identifier)),
       '(',
-      optional(seq($.argument, repeat(seq(',', $.argument)))),
+      comma_sep($.argument),
       ')',
       optional($.object_initializers)
     ),
 
     object_initializers: $ => seq(
       '{',
-      optional(seq($.member_initializer, repeat(seq(',', $.member_initializer)), optional(',') /* support trailing comma */)),
+      comma_sep_trailing($.member_initializer),
       '}'
     ),
 
@@ -253,7 +266,7 @@ module.exports = grammar({
 
     initializer: $ => seq(
       '{',
-      optional(seq($.argument, repeat(seq(',', $.argument)), optional(',') /* support trailing comma */)),
+      comma_sep_trailing($.argument),
       '}'
     ),
 
@@ -334,8 +347,7 @@ module.exports = grammar({
 
     type_arguments: $ => seq(
       '<',
-      $.type,
-      repeat(seq(',', $.type)),
+      comma_sep1($.type),
       '>'
     ),
 
@@ -346,10 +358,7 @@ module.exports = grammar({
       optional('?')
     ),
 
-    array_size: $ => seq(
-      $._expression,
-      repeat(seq(',', $._expression))
-    ),
+    array_size: $ => comma_sep1($._expression),
 
     member_declaration_modifier: $ => choice(
       'async',
@@ -391,7 +400,7 @@ module.exports = grammar({
       repeat($.type_declaration_modifier),
       'class',
       $.unqualified_type,
-      optional(seq(':', $.type, repeat(seq(',', $.type)))),
+      optional(seq(':', comma_sep1($.type))),
       '{',
       repeat($.class_member),
       '}'
@@ -421,7 +430,7 @@ module.exports = grammar({
       repeat($.type_declaration_modifier),
       'interface',
       $.unqualified_type,
-      optional(seq(':', $.type, repeat(seq(',', $.type)))),
+      optional(seq(':', comma_sep1($.type))),
       '{',
       repeat($.interface_member),
       '}'
@@ -448,7 +457,7 @@ module.exports = grammar({
       repeat($.type_declaration_modifier),
       'struct',
       $.unqualified_type,
-      optional(seq(':', $.type, repeat(seq(',', $.type)))),
+      optional(seq(':', comma_sep1($.type))),
       '{',
       repeat($.struct_member),
       '}'
@@ -471,8 +480,7 @@ module.exports = grammar({
       'enum',
       $.symbol,
       '{',
-      $.enum_value,
-      repeat(seq(',', $.enum_value)),
+      comma_sep1($.enum_value),
       optional(choice(
         ',',    // support trailing ','
         seq(';', repeat(seq(
@@ -495,8 +503,7 @@ module.exports = grammar({
       'errordomain',
       $.symbol,
       '{',
-      $.errorcode,
-      repeat(seq(',', $.errorcode)),
+      comma_sep1($.errorcode),
       optional(choice(
         ',',    // support trailing ','
         seq(';', repeat(seq(repeat($._attribute_list), $.method_declaration)))
@@ -530,9 +537,9 @@ module.exports = grammar({
       repeat($.member_declaration_modifier),
       $.symbol,
       '(',
-      optional(seq($.parameter, repeat(seq(',', $.parameter)))),
+      comma_sep($.parameter),
       ')',
-      optional(seq('throws', $.type)),
+      optional(seq('throws', comma_sep1($.type))),
       optional(seq(choice('requires', 'ensures'), '(', $._expression, ')')),
       choice($.block, ';')
     ),
@@ -555,9 +562,9 @@ module.exports = grammar({
       $.symbol,
       optional($.type_arguments),
       '(',
-      optional(seq($.parameter, repeat(seq(',', $.parameter)))),
+      comma_sep($.parameter),
       ')',
-      optional(seq('throws', $.type)),
+      optional(seq('throws', comma_sep1($.type))),
       ';'
     ),
 
@@ -568,9 +575,9 @@ module.exports = grammar({
       $.symbol,
       optional($.type_arguments),
       '(',
-      optional(seq($.parameter, repeat(seq(',', $.parameter)))),
+      comma_sep($.parameter),
       ')',
-      optional(seq('throws', $.type)),
+      optional(seq('throws', comma_sep1($.type))),
       optional(seq(choice('requires', 'ensures'), '(', $._expression, ')')),
       choice($.block, ';')
     ),
@@ -592,7 +599,7 @@ module.exports = grammar({
       $.type,
       $.symbol,
       '(',
-      optional(seq($.parameter, repeat(seq(',', $.parameter)))),
+      comma_sep($.parameter),
       ')',
       choice($.block, ';')
     ),
@@ -671,8 +678,7 @@ module.exports = grammar({
 
     local_declaration: $ => seq(
       $.type,
-      $.assignment,
-      repeat(seq(',', $.assignment)),
+      comma_sep1($.assignment),
       ';'
     ),
 
@@ -680,7 +686,7 @@ module.exports = grammar({
         $.type,
         $.identifier,
         '(',
-        optional(seq($.parameter, repeat(seq(',', $.parameter)))),
+        comma_sep($.parameter),
         ')',
         $.block
     ),
@@ -781,7 +787,7 @@ module.exports = grammar({
       optional(choice($.local_declaration, seq($._expression, ';'), ';')),
       optional($._expression),
       ';',
-      optional(seq($._expression, repeat(seq(',', $._expression)))),
+      comma_sep($._expression),
       ')',
       $._statement
     ),

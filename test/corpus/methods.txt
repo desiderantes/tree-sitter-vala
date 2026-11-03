@@ -1,0 +1,30 @@
+=========================
+Methods with multi-throws
+=========================
+
+class Service {
+    public void execute () throws IOError, DatabaseError {
+    }
+}
+
+---
+
+(source_file
+  (namespace_member
+    (class_declaration
+      (unqualified_type
+        (symbol
+          (identifier)))
+      (class_member
+        (method_declaration
+          (access_modifier)
+          (type)
+          (symbol
+            (identifier))
+          (type
+            (symbol
+              (identifier)))
+          (type
+            (symbol
+              (identifier)))
+          (block))))))

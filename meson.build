@@ -63,13 +63,19 @@ if get_option('tests')
         dependencies: [tree_sitter_vala_dep, glib_dep],
     )
 
-    test('vapi-usage', tree_sitter_vala_vapi_test, protocol: 'tap', suite: 'vapi')
+    test(
+        'vapi-usage',
+        tree_sitter_vala_vapi_test,
+        protocol: 'tap',
+        suite: 'vapi',
+    )
 
     tree_sitter_bin = find_program('tree-sitter', required: false)
     if tree_sitter_bin.found()
         corpus_files = files(
             'test/corpus/attributes.txt',
             'test/corpus/expressions.txt',
+            'test/corpus/methods.txt',
             'test/corpus/namespaces.txt',
             'test/corpus/preprocessor.txt',
             'test/corpus/strings.txt',
