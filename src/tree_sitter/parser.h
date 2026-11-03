@@ -279,8 +279,6 @@ static inline bool set_contains(const TSCharacterRange *ranges, uint32_t len, in
     .type = TSParseActionTypeAccept \
   }}
 
-const TSLanguage *tree_sitter_vala(void);
-
 #ifdef __cplusplus
 }
 #endif

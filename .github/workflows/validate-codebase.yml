@@ -1,0 +1,72 @@
+name: Vala Codebase Validation
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+    inputs:
+      codebase_url:
+        description: 'Git repository URL to clone and validate'
+        required: true
+        default: 'https://gitlab.gnome.org/GNOME/vala.git'
+      codebase_ref:
+        description: 'Tag or branch to clone'
+        required: false
+        default: '0.56.17'
+
+jobs:
+  validate-codebase:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout tree-sitter-vala
+        uses: actions/checkout@v4
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            valac \
+            libglib2.0-dev \
+            meson \
+            ninja-build \
+            git
+
+      - name: Install tree-sitter C library (v0.27.1)
+        run: |
+          git clone --depth 1 --branch v0.27.1 https://github.com/tree-sitter/tree-sitter.git /tmp/tree-sitter
+          make -C /tmp/tree-sitter
+          sudo make -C /tmp/tree-sitter install PREFIX=/usr LIBDIR=/usr/lib/$(uname -m)-linux-gnu INCLUDEDIR=/usr/include
+          sudo ldconfig
+
+      - name: Build tree-sitter-vala and Test Suite
+        run: |
+          meson setup build -Dtests=true
+          ninja -C build
+
+      - name: Clone Codebase to Validate
+        run: |
+          REPO_URL="${{ github.event.inputs.codebase_url || 'https://gitlab.gnome.org/GNOME/vala.git' }}"
+          REF="${{ github.event.inputs.codebase_ref || '0.56.17' }}"
+          git clone --depth 1 --branch "$REF" "$REPO_URL" target-codebase
+
+      - name: Run Codebase Validation Test
+        run: |
+          ./build/tree-sitter-vala-codebase-test \
+            --codebase target-codebase \
+            --log-file build/codebase-failures.md \
+            --summary \
+            --exclude "*preprocessor*.vala" \
+            --exclude "*/bug647018.vala" \
+            --exclude "*/fixed-length-init0-not-allowed.vala" \
+            --exclude "*/statement-keyword-as-identifier.vala" || true
+
+      - name: Upload Failure Log Artifact
+        uses: actions/upload-artifact@v4
+        if: always() && !env.ACT
+        with:
+          name: codebase-failures-report
+          path: build/codebase-failures.md

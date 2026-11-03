@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            valac \
+            libglib2.0-dev \
+            meson \
+            ninja-build \
+            nodejs \
+            npm
+
+      - name: Install tree-sitter C library (v0.27.1)
+        run: |
+          git clone --depth 1 --branch v0.27.1 https://github.com/tree-sitter/tree-sitter.git /tmp/tree-sitter
+          make -C /tmp/tree-sitter
+          sudo make -C /tmp/tree-sitter install PREFIX=/usr LIBDIR=/usr/lib/$(uname -m)-linux-gnu INCLUDEDIR=/usr/include
+          sudo ldconfig
+
+      - name: Install tree-sitter CLI
+        run: |
+          npm install -g tree-sitter-cli@0.27.1
+
+      - name: Setup Meson Build (Tests Enabled)
+        run: meson setup build -Dtests=true
+
+      - name: Compile
+        run: ninja -C build
+
+      - name: Run Test Suite
+        run: meson test -C build --verbose --print-errorlogs
+
+      - name: Verify Standalone Installation
+        run: DESTDIR="${{ runner.temp }}/install" ninja -C build install
+
+      - name: Verify Subproject Configuration
+        run: |
+          meson setup build_no_tests -Dtests=false
+          ninja -C build_no_tests

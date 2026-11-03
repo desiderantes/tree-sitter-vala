@@ -1,0 +1,32 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "vala",
+      "camelcase": "Vala",
+      "scope": "source.vala",
+      "path": ".",
+      "file-types": [
+        "vala",
+        "vapi"
+      ],
+      "highlights": "queries/highlights.scm",
+      "locals": "queries/locals.scm",
+      "injection-regex": "^vala$"
+    }
+  ],
+  "metadata": {
+    "version": "0.54.0",
+    "license": "LGPL-2.1-only",
+    "description": "Vala grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "Princeton Ferro",
+        "email": "princetonferro@gmail.com"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/vala-lang/tree-sitter-vala"
+    }
+  }
+}
