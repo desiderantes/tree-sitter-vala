@@ -160,7 +160,7 @@ module.exports = grammar({
 
     slice_expression: $ => choice(
       seq($._expression, ':', optional($._expression)),
-      seq(':', $._expression)
+      seq(':', optional($._expression))
     ),
 
     argument: $ => choice(
@@ -378,7 +378,13 @@ module.exports = grammar({
 
     array_type: $ => seq(
       '[',
-      optional($.array_size),
+      choice(
+        repeat1(','),
+        seq(
+          optional(comma_sep1($._expression)),
+          optional(seq(':', $.type))
+        )
+      ),
       ']',
       optional('?')
     ),
@@ -650,7 +656,17 @@ module.exports = grammar({
       ';'
     ),
 
-    inline_array_type: $ => seq('[', optional($._expression), ']'),
+    inline_array_type: $ => seq(
+      '[',
+      choice(
+        repeat1(','),
+        seq(
+          optional(comma_sep1($._expression)),
+          optional(seq(':', $.type))
+        )
+      ),
+      ']'
+    ),
     
     property_declaration: $ => seq(
       optional($.access_modifier),

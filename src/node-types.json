@@ -684,12 +684,12 @@
     }
   },
   {
-    "type": "array_size",
+    "type": "array_type",
     "named": true,
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "addressof_expression",
@@ -828,6 +828,10 @@
           "named": true
         },
         {
+          "type": "type",
+          "named": true
+        },
+        {
           "type": "type_relational_expression",
           "named": true
         },
@@ -841,21 +845,6 @@
         },
         {
           "type": "yield_expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "array_type",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "array_size",
           "named": true
         }
       ]
@@ -6225,7 +6214,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
@@ -6362,6 +6351,10 @@
         },
         {
           "type": "this_access",
+          "named": true
+        },
+        {
+          "type": "type",
           "named": true
         },
         {
@@ -9721,7 +9714,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "addressof_expression",

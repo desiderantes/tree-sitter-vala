@@ -193,3 +193,83 @@ void main() {
             (identifier)
             (literal
               (real))))))))
+
+===================================
+Multi-dimensional and sliced arrays
+===================================
+
+void main() {
+    int[,] a;
+    uint8[:size_t] b;
+    int[,,] c;
+    t = s[:];
+    int[,] foo = { { 1, 2 }, { 3, 4 } };
+}
+
+---
+
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type
+            (symbol
+              (identifier))
+            (array_type))
+          (assignment
+            (identifier)))
+        (local_declaration
+          (type
+            (symbol
+              (identifier))
+            (array_type
+              (type
+                (symbol
+                  (identifier)))))
+          (assignment
+            (identifier)))
+        (local_declaration
+          (type
+            (symbol
+              (identifier))
+            (array_type))
+          (assignment
+            (identifier)))
+        (expression_statement
+          (assignment_expression
+            (member_access_expression
+              (identifier))
+            (element_access_expression
+              (member_access_expression
+                (identifier))
+              (element_access
+                (slice_expression)))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier))
+            (array_type))
+          (assignment
+            (identifier)
+            (initializer
+              (argument
+                (initializer
+                  (argument
+                    (literal
+                      (integer)))
+                  (argument
+                    (literal
+                      (integer)))))
+              (argument
+                (initializer
+                  (argument
+                    (literal
+                      (integer)))
+                  (argument
+                    (literal
+                      (integer))))))))))))
