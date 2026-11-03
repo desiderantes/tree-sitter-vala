@@ -351,22 +351,26 @@ module.exports = grammar({
 
     type: $ => choice(
       'var',
-      seq('void', repeat('*')),
+      seq(
+        optional('dynamic'),
+        optional(choice('unowned', 'owned', 'weak')),
+        choice(
+          seq('void', repeat('*')),
+          seq(
+            $.symbol,
+            optional($.type_arguments),
+            repeat('*'),
+            optional('?')
+          )
+        ),
+        repeat($.array_type)
+      ),
       seq(
         optional('dynamic'),
         optional(choice('unowned', 'owned', 'weak')),
         '(',
         $.type,
         ')',
-        repeat1($.array_type)
-      ),
-      seq(
-        optional('dynamic'),
-        optional(choice('unowned', 'owned', 'weak')),
-        $.symbol,
-        optional($.type_arguments),
-        repeat('*'),
-        optional('?'),
         repeat($.array_type)
       )
     ),

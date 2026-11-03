@@ -392,3 +392,63 @@ void main () {
                   (identifier)
                   (literal
                     (integer)))))))))))
+
+==========================================
+Pointer and unowned array types
+==========================================
+
+void main () {
+    void*[] a = {};
+    (unowned Object)[] test = new (unowned Object)[] { o1 };
+    (unowned string)[] ret = new (unowned string)[1];
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type
+            (array_type))
+          (assignment
+            (identifier)
+            (initializer)))
+        (local_declaration
+          (type
+            (type
+              (symbol
+                (identifier)))
+            (array_type))
+          (assignment
+            (identifier)
+            (array_creation_expression
+              (type
+                (type
+                  (symbol
+                    (identifier))))
+              (inline_array_type)
+              (initializer
+                (argument
+                  (member_access_expression
+                    (identifier)))))))
+        (local_declaration
+          (type
+            (type
+              (symbol
+                (identifier)))
+            (array_type))
+          (assignment
+            (identifier)
+            (array_creation_expression
+              (type
+                (type
+                  (symbol
+                    (identifier))))
+              (inline_array_type
+                (literal
+                  (integer))))))))))
