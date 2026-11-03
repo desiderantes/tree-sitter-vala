@@ -343,3 +343,52 @@ void main () {
             (identifier)
             (literal
               (regex))))))))
+
+==========================================
+Struct creation and initializer without new
+==========================================
+
+void main () {
+    var foo = Foo () { bar = 1 };
+    Variant a = Foo () { a = 2, b = 3 };
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type)
+          (assignment
+            (identifier)
+            (method_call_expression
+              (member_access_expression
+                (identifier))
+              (object_initializers
+                (member_initializer
+                  (identifier)
+                  (literal
+                    (integer)))))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (method_call_expression
+              (member_access_expression
+                (identifier))
+              (object_initializers
+                (member_initializer
+                  (identifier)
+                  (literal
+                    (integer)))
+                (member_initializer
+                  (identifier)
+                  (literal
+                    (integer)))))))))))

@@ -8721,6 +8721,16 @@
             "named": true
           }
         ]
+      },
+      "initializer": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "object_initializers",
+            "named": true
+          }
+        ]
       }
     }
   },

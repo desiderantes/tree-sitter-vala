@@ -178,7 +178,8 @@ module.exports = grammar({
       )),
       '(',
       comma_sep(field('argument', $.argument)),
-      ')'
+      ')',
+      optional(field('initializer', $.object_initializers))
     ),
 
     yield_expression: $ => seq('yield', $._expression),
