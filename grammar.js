@@ -908,12 +908,13 @@ module.exports = grammar({
         $.elif_directive,
         $.else_directive,
         $.endif_directive
-      )
+      ),
+      /\r?\n/
     ),
 
-    if_directive: $ => seq('if', field('expression', $._preprocessor_expression)),
+    if_directive: $ => seq('if', field('expression', $._preprocessor_contained_expression)),
 
-    elif_directive: $ => seq('elif', field('expression', $._preprocessor_expression)),
+    elif_directive: $ => seq('elif', field('expression', $._preprocessor_contained_expression)),
 
     else_directive: $ => 'else',
 
@@ -926,13 +927,11 @@ module.exports = grammar({
     ),
 
     _preprocessor_contained_expression: $ => choice(
-      seq('(', $._preprocessor_contained_expression, ')'),
-      $.identifier,
-      $.literal,
-      prec.right(4, seq('!', $._preprocessor_expression)),
-      prec.left(3, seq($._preprocessor_expression, choice('==', '!='), $._preprocessor_expression)),
-      prec.left(2, seq($._preprocessor_expression, '&&', $._preprocessor_expression)),
-      prec.left(1, seq($._preprocessor_expression, '||', $._preprocessor_expression)),
+      $._preprocessor_expression,
+      prec.right(4, seq('!', $._preprocessor_contained_expression)),
+      prec.left(3, seq($._preprocessor_contained_expression, choice('==', '!='), $._preprocessor_contained_expression)),
+      prec.left(2, seq($._preprocessor_contained_expression, '&&', $._preprocessor_contained_expression)),
+      prec.left(1, seq($._preprocessor_contained_expression, '||', $._preprocessor_contained_expression)),
     )
   },
 

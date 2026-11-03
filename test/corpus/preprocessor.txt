@@ -42,4 +42,50 @@ int x = 2;
    (identifier)
    (literal
     (integer))))
-(endif_directive))
+ (endif_directive))
+
+=======================================================
+Preprocessor directives inside statement blocks with ops
+=======================================================
+
+void main () {
+#if !GLIB_2_16
+    assert_not_reached ();
+#elif VALA_FOO && !VALA_BAR
+    assert_not_reached ();
+#else
+    assert (true);
+#endif
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (if_directive
+          (identifier))
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (identifier))))
+        (elif_directive
+          (identifier)
+          (identifier))
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (identifier))))
+        (else_directive)
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (identifier))
+            (argument
+              (literal
+                (boolean)))))
+        (endif_directive)))))

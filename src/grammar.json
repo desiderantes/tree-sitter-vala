@@ -6011,6 +6011,10 @@
               "name": "endif_directive"
             }
           ]
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\r?\\n"
         }
       ]
     },
@@ -6026,7 +6030,7 @@
           "name": "expression",
           "content": {
             "type": "SYMBOL",
-            "name": "_preprocessor_expression"
+            "name": "_preprocessor_contained_expression"
           }
         }
       ]
@@ -6043,7 +6047,7 @@
           "name": "expression",
           "content": {
             "type": "SYMBOL",
-            "name": "_preprocessor_expression"
+            "name": "_preprocessor_contained_expression"
           }
         }
       ]
@@ -6090,29 +6094,8 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "("
-            },
-            {
-              "type": "SYMBOL",
-              "name": "_preprocessor_contained_expression"
-            },
-            {
-              "type": "STRING",
-              "value": ")"
-            }
-          ]
-        },
-        {
           "type": "SYMBOL",
-          "name": "identifier"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "literal"
+          "name": "_preprocessor_expression"
         },
         {
           "type": "PREC_RIGHT",
@@ -6126,7 +6109,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_preprocessor_expression"
+                "name": "_preprocessor_contained_expression"
               }
             ]
           }
@@ -6139,7 +6122,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_preprocessor_expression"
+                "name": "_preprocessor_contained_expression"
               },
               {
                 "type": "CHOICE",
@@ -6156,7 +6139,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_preprocessor_expression"
+                "name": "_preprocessor_contained_expression"
               }
             ]
           }
@@ -6169,7 +6152,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_preprocessor_expression"
+                "name": "_preprocessor_contained_expression"
               },
               {
                 "type": "STRING",
@@ -6177,7 +6160,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_preprocessor_expression"
+                "name": "_preprocessor_contained_expression"
               }
             ]
           }
@@ -6190,7 +6173,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_preprocessor_expression"
+                "name": "_preprocessor_contained_expression"
               },
               {
                 "type": "STRING",
@@ -6198,7 +6181,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_preprocessor_expression"
+                "name": "_preprocessor_contained_expression"
               }
             ]
           }
