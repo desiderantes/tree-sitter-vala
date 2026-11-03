@@ -171,13 +171,13 @@ module.exports = grammar({
     ),
 
     method_call_expression: $ => seq(
-      choice(
+      field('function', choice(
         seq('(', $._expression, ')'),
         seq($.member_access_expression, optional($.type_arguments)),
         $._contained_expression
-      ),
+      )),
       '(',
-      comma_sep($.argument),
+      comma_sep(field('argument', $.argument)),
       ')'
     ),
 
@@ -227,7 +227,7 @@ module.exports = grammar({
     ternary_expression: $ => prec.right(2, seq($._expression, '?', $._expression, ':', $._expression)),
 
     _assignment_operator: $ => choice('=', '+=', '-=', '|=', '&=', '^=', '/=', '*=', '%=', '<<=', '>>='),
-    assignment_expression: $ => prec.right(1, seq($._expression, $._assignment_operator, $._expression)),
+    assignment_expression: $ => prec.right(1, seq(field('left', $._expression), field('operator', $._assignment_operator), field('right', $._expression))),
 
     this_access: $ => 'this',
 
@@ -237,19 +237,19 @@ module.exports = grammar({
 
     array_creation_expression: $ => seq(
       'new',
-      $.type,
-      $.inline_array_type,
-      optional($.initializer)
+      field('type', $.type),
+      field('size', $.inline_array_type),
+      optional(field('initializer', $.initializer))
     ),
 
     object_creation_expression: $ => seq(
       'new',
-      $.type,
-      optional(seq('.', $.identifier)),
+      field('type', $.type),
+      optional(seq('.', field('constructor', $.identifier))),
       '(',
-      comma_sep($.argument),
+      comma_sep(field('argument', $.argument)),
       ')',
-      optional($.object_initializers)
+      optional(field('initializer', $.object_initializers))
     ),
 
     object_initializers: $ => seq(
@@ -414,7 +414,7 @@ module.exports = grammar({
 
     namespace_declaration: $ => seq(
       'namespace',
-      $.symbol,
+      field('name', $.symbol),
       '{',
       repeat($.using_directive),
       repeat($.namespace_member),
@@ -431,12 +431,12 @@ module.exports = grammar({
     ),
 
     class_declaration: $ => seq(
-      repeat($.type_declaration_modifier),
+      repeat(field('modifier', $.type_declaration_modifier)),
       'class',
-      $.unqualified_type,
-      optional(seq(':', comma_sep1($.type))),
+      field('name', $.unqualified_type),
+      optional(seq(':', comma_sep1(field('base_type', $.type)))),
       '{',
-      repeat($.class_member),
+      repeat(field('member', $.class_member)),
       '}'
     ),
 
@@ -460,12 +460,12 @@ module.exports = grammar({
     ),
 
     interface_declaration: $ => seq(
-      repeat($.type_declaration_modifier),
+      repeat(field('modifier', $.type_declaration_modifier)),
       'interface',
-      $.unqualified_type,
-      optional(seq(':', comma_sep1($.type))),
+      field('name', $.unqualified_type),
+      optional(seq(':', comma_sep1(field('base_type', $.type)))),
       '{',
-      repeat($.interface_member),
+      repeat(field('member', $.interface_member)),
       '}'
     ),
 
@@ -486,12 +486,12 @@ module.exports = grammar({
     ),
 
     struct_declaration: $ => seq(
-      repeat($.type_declaration_modifier),
+      repeat(field('modifier', $.type_declaration_modifier)),
       'struct',
-      $.unqualified_type,
-      optional(seq(':', comma_sep1($.type))),
+      field('name', $.unqualified_type),
+      optional(seq(':', comma_sep1(field('base_type', $.type)))),
       '{',
-      repeat($.struct_member),
+      repeat(field('member', $.struct_member)),
       '}'
     ),
 
@@ -507,11 +507,11 @@ module.exports = grammar({
     ),
 
     enum_declaration: $ => seq(
-      repeat($.type_declaration_modifier),
+      repeat(field('modifier', $.type_declaration_modifier)),
       'enum',
-      $.symbol,
+      field('name', $.symbol),
       '{',
-      comma_sep1($.enum_value),
+      comma_sep1(field('value', $.enum_value)),
       optional(choice(
         ',',    // support trailing ','
         seq(';', repeat(seq(
@@ -524,16 +524,16 @@ module.exports = grammar({
 
     enum_value: $ => seq(
       repeat($._attribute_list),
-      $.identifier,
-      optional(seq('=', $._expression))
+      field('name', $.identifier),
+      optional(seq('=', field('value', $._expression)))
     ),
 
     errordomain_declaration: $ => seq(
-      repeat($.type_declaration_modifier),
+      repeat(field('modifier', $.type_declaration_modifier)),
       'errordomain',
-      $.symbol,
+      field('name', $.symbol),
       '{',
-      comma_sep1($.errorcode),
+      comma_sep1(field('value', $.errorcode)),
       optional(choice(
         ',',    // support trailing ','
         seq(';', repeat(seq(repeat($._attribute_list), $.method_declaration)))
@@ -543,8 +543,8 @@ module.exports = grammar({
 
     errorcode: $ => seq(
       repeat($._attribute_list),
-      $.identifier,
-      optional(seq('=', $._expression))
+      field('name', $.identifier),
+      optional(seq('=', field('value', $._expression)))
     ),
 
     parameter: $ => seq(
@@ -552,25 +552,25 @@ module.exports = grammar({
       choice(
         seq(
           optional('params'),
-          optional(choice('out', 'ref')),
-          $.type,
-          $.identifier,
-          optional($.inline_array_type),
-          optional(seq('=', $._expression))
+          optional(field('modifier', choice('out', 'ref'))),
+          field('type', $.type),
+          field('name', $.identifier),
+          optional(field('array_dimension', $.inline_array_type)),
+          optional(seq('=', field('default_value', $._expression)))
         ),
         '...'
       )
     ),
 
     creation_method_declaration: $ => seq(
-      repeat($.member_declaration_modifier),
-      $.symbol,
+      repeat(field('modifier', $.member_declaration_modifier)),
+      field('name', $.symbol),
       '(',
-      comma_sep($.parameter),
+      comma_sep(field('parameter', $.parameter)),
       ')',
-      optional(seq('throws', comma_sep1($.type))),
-      optional(seq(choice('requires', 'ensures'), '(', $._expression, ')')),
-      choice($.block, ';')
+      optional(seq('throws', comma_sep1(field('error_type', $.type)))),
+      optional(seq(choice('requires', 'ensures'), '(', field('condition', $._expression), ')')),
+      field('body', choice($.block, ';'))
     ),
 
     delegate_declaration_modifier: $ => choice(
@@ -586,29 +586,29 @@ module.exports = grammar({
     ),
 
     delegate_declaration: $ => seq(
-      repeat($.delegate_declaration_modifier),
+      repeat(field('modifier', $.delegate_declaration_modifier)),
       'delegate',
-      $.type,
-      $.symbol,
-      optional($.type_arguments),
+      field('type', $.type),
+      field('name', $.symbol),
+      optional(field('type_arguments', $.type_arguments)),
       '(',
-      comma_sep($.parameter),
+      comma_sep(field('parameter', $.parameter)),
       ')',
-      optional(seq('throws', comma_sep1($.type))),
+      optional(seq('throws', comma_sep1(field('error_type', $.type)))),
       ';'
     ),
 
     method_declaration: $ => seq(
-      repeat($.member_declaration_modifier),
-      $.type,
-      $.symbol,
-      optional($.type_arguments),
+      repeat(field('modifier', $.member_declaration_modifier)),
+      field('type', $.type),
+      field('name', $.symbol),
+      optional(field('type_arguments', $.type_arguments)),
       '(',
-      comma_sep($.parameter),
+      comma_sep(field('parameter', $.parameter)),
       ')',
-      optional(seq('throws', comma_sep1($.type))),
-      optional(seq(choice('requires', 'ensures'), '(', $._expression, ')')),
-      choice($.block, ';')
+      optional(seq('throws', comma_sep1(field('error_type', $.type)))),
+      optional(seq(choice('requires', 'ensures'), '(', field('condition', $._expression), ')')),
+      field('body', choice($.block, ';'))
     ),
 
     signal_declaration_modifier: $ => choice(
@@ -623,32 +623,32 @@ module.exports = grammar({
     ),
 
     signal_declaration: $ => seq(
-      repeat($.signal_declaration_modifier),
+      repeat(field('modifier', $.signal_declaration_modifier)),
       'signal',
-      $.type,
-      $.symbol,
+      field('type', $.type),
+      field('name', $.symbol),
       '(',
-      comma_sep($.parameter),
+      comma_sep(field('parameter', $.parameter)),
       ')',
-      choice($.block, ';')
+      field('body', choice($.block, ';'))
     ),
 
     field_declaration: $ => seq(
-      repeat($.member_declaration_modifier),
-      $.type,
-      $.identifier,
-      optional($.inline_array_type),
-      optional(seq('=', $._expression)),
+      repeat(field('modifier', $.member_declaration_modifier)),
+      field('type', $.type),
+      field('name', $.identifier),
+      optional(field('array_dimension', $.inline_array_type)),
+      optional(seq('=', field('value', $._expression))),
       ';'
     ),
 
     constant_declaration: $ => seq(
-      repeat($.member_declaration_modifier),
+      repeat(field('modifier', $.member_declaration_modifier)),
       'const',
-      $.type,
-      $.identifier,
-      optional($.inline_array_type),
-      optional(seq('=', $._expression)),
+      field('type', $.type),
+      field('name', $.identifier),
+      optional(field('array_dimension', $.inline_array_type)),
+      optional(seq('=', field('value', $._expression))),
       ';'
     ),
 
@@ -665,9 +665,9 @@ module.exports = grammar({
     ),
     
     property_declaration: $ => seq(
-      repeat($.member_declaration_modifier),
-      $.type,
-      $.symbol,
+      repeat(field('modifier', $.member_declaration_modifier)),
+      field('type', $.type),
+      field('name', $.symbol),
       '{',
       choice($.property_default, $.property_accessor),
       repeat(choice($.property_default, $.property_accessor)),
@@ -699,38 +699,38 @@ module.exports = grammar({
     ),
 
     constructor_declaration: $ => seq(
-      repeat($.constructor_declaration_modifier),
+      repeat(field('modifier', $.constructor_declaration_modifier)),
       'construct',
-      $.block
+      field('body', $.block)
     ),
 
     destructor_declaration: $ => seq(
-      repeat($.constructor_declaration_modifier),
+      repeat(field('modifier', $.constructor_declaration_modifier)),
       '~',
-      $.identifier,
+      field('name', $.identifier),
       '(', ')',
-      $.block
+      field('body', $.block)
     ),
 
     local_declaration: $ => seq(
-      $.type,
-      comma_sep1($.assignment),
+      field('type', $.type),
+      comma_sep1(field('declarator', $.assignment)),
       ';'
     ),
 
     local_function_declaration: $ => seq(
-        $.type,
-        $.identifier,
+        field('type', $.type),
+        field('name', $.identifier),
         '(',
-        comma_sep($.parameter),
+        comma_sep(field('parameter', $.parameter)),
         ')',
-        $.block
+        field('body', $.block)
     ),
 
     assignment: $ => prec.dynamic(20, seq(
-      $.identifier,
-      optional($.inline_array_type),
-      optional(seq('=', $._expression))
+      field('name', $.identifier),
+      optional(field('array_dimension', $.inline_array_type)),
+      optional(seq('=', field('value', $._expression)))
     )),
 
     block: $ => seq('{', repeat(choice($._statement, $.local_declaration, $.local_function_declaration)), '}'),
