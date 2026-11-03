@@ -17,7 +17,8 @@ class Service {
           (identifier)))
       (class_member
         (method_declaration
-          (access_modifier)
+          (member_declaration_modifier
+            (access_modifier))
           (type)
           (symbol
             (identifier))
@@ -27,4 +28,56 @@ class Service {
           (type
             (symbol
               (identifier)))
+          (block))))))
+
+========================================
+Flexible modifiers and sealed constructs
+========================================
+
+public sealed class Foo : Object {
+    abstract public void do_work ();
+    public static delegate void Callback ();
+    public sealed override void run () {
+    }
+}
+
+---
+
+(source_file
+  (namespace_member
+    (class_declaration
+      (type_declaration_modifier
+        (access_modifier))
+      (type_declaration_modifier)
+      (unqualified_type
+        (symbol
+          (identifier)))
+      (type
+        (symbol
+          (identifier)))
+      (class_member
+        (method_declaration
+          (member_declaration_modifier)
+          (member_declaration_modifier
+            (access_modifier))
+          (type)
+          (symbol
+            (identifier))))
+      (class_member
+        (delegate_declaration
+          (delegate_declaration_modifier
+            (access_modifier))
+          (delegate_declaration_modifier)
+          (type)
+          (symbol
+            (identifier))))
+      (class_member
+        (method_declaration
+          (member_declaration_modifier
+            (access_modifier))
+          (member_declaration_modifier)
+          (member_declaration_modifier)
+          (type)
+          (symbol
+            (identifier))
           (block))))))

@@ -2633,6 +2633,10 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "SYMBOL",
+          "name": "access_modifier"
+        },
+        {
           "type": "STRING",
           "value": "async"
         },
@@ -2663,6 +2667,10 @@
         {
           "type": "STRING",
           "value": "override"
+        },
+        {
+          "type": "STRING",
+          "value": "sealed"
         },
         {
           "type": "STRING",
@@ -2730,12 +2738,20 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "SYMBOL",
+          "name": "access_modifier"
+        },
+        {
           "type": "STRING",
           "value": "partial"
         },
         {
           "type": "STRING",
           "value": "abstract"
+        },
+        {
+          "type": "STRING",
+          "value": "sealed"
         },
         {
           "type": "STRING",
@@ -2750,18 +2766,6 @@
     "class_declaration": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
         {
           "type": "REPEAT",
           "content": {
@@ -2909,18 +2913,6 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",
@@ -3055,18 +3047,6 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",
@@ -3180,18 +3160,6 @@
     "enum_declaration": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
         {
           "type": "REPEAT",
           "content": {
@@ -3336,18 +3304,6 @@
     "errordomain_declaration": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
         {
           "type": "REPEAT",
           "content": {
@@ -3584,18 +3540,6 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",
@@ -3743,8 +3687,12 @@
       ]
     },
     "delegate_declaration_modifier": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
+        {
+          "type": "SYMBOL",
+          "name": "access_modifier"
+        },
         {
           "type": "STRING",
           "value": "async"
@@ -3772,24 +3720,16 @@
         {
           "type": "STRING",
           "value": "override"
+        },
+        {
+          "type": "STRING",
+          "value": "static"
         }
       ]
     },
     "delegate_declaration": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
         {
           "type": "REPEAT",
           "content": {
@@ -3913,18 +3853,6 @@
     "method_declaration": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
         {
           "type": "REPEAT",
           "content": {
@@ -4092,6 +4020,10 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "SYMBOL",
+          "name": "access_modifier"
+        },
+        {
           "type": "STRING",
           "value": "async"
         },
@@ -4124,18 +4056,6 @@
     "signal_declaration": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
         {
           "type": "REPEAT",
           "content": {
@@ -4215,18 +4135,6 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",
@@ -4283,18 +4191,6 @@
     "constant_declaration": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
         {
           "type": "REPEAT",
           "content": {
@@ -4440,18 +4336,6 @@
     "property_declaration": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "access_modifier"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
         {
           "type": "REPEAT",
           "content": {
@@ -5900,6 +5784,41 @@
     [
       "member_declaration_modifier",
       "delegate_declaration_modifier"
+    ],
+    [
+      "member_declaration_modifier",
+      "delegate_declaration_modifier",
+      "signal_declaration_modifier"
+    ],
+    [
+      "member_declaration_modifier",
+      "type_declaration_modifier",
+      "delegate_declaration_modifier"
+    ],
+    [
+      "member_declaration_modifier",
+      "type_declaration_modifier",
+      "delegate_declaration_modifier",
+      "signal_declaration_modifier"
+    ],
+    [
+      "member_declaration_modifier",
+      "delegate_declaration_modifier",
+      "signal_declaration_modifier",
+      "constructor_declaration_modifier"
+    ],
+    [
+      "member_declaration_modifier",
+      "type_declaration_modifier",
+      "delegate_declaration_modifier",
+      "constructor_declaration_modifier"
+    ],
+    [
+      "member_declaration_modifier",
+      "type_declaration_modifier",
+      "delegate_declaration_modifier",
+      "signal_declaration_modifier",
+      "constructor_declaration_modifier"
     ],
     [
       "array_creation_expression",

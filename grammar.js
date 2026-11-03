@@ -392,6 +392,7 @@ module.exports = grammar({
     array_size: $ => comma_sep1($._expression),
 
     member_declaration_modifier: $ => choice(
+      $.access_modifier,
       'async',
       'class',
       'extern',
@@ -400,6 +401,7 @@ module.exports = grammar({
       'abstract',
       'virtual',
       'override',
+      'sealed',
       'new'
     ),
 
@@ -420,14 +422,15 @@ module.exports = grammar({
     ),
 
     type_declaration_modifier: $ => choice(
+      $.access_modifier,
       'partial',
       'abstract',
+      'sealed',
       'extern',
       'static'
     ),
 
     class_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.type_declaration_modifier),
       'class',
       $.unqualified_type,
@@ -457,7 +460,6 @@ module.exports = grammar({
     ),
 
     interface_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.type_declaration_modifier),
       'interface',
       $.unqualified_type,
@@ -484,7 +486,6 @@ module.exports = grammar({
     ),
 
     struct_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.type_declaration_modifier),
       'struct',
       $.unqualified_type,
@@ -506,7 +507,6 @@ module.exports = grammar({
     ),
 
     enum_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.type_declaration_modifier),
       'enum',
       $.symbol,
@@ -529,7 +529,6 @@ module.exports = grammar({
     ),
 
     errordomain_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.type_declaration_modifier),
       'errordomain',
       $.symbol,
@@ -564,7 +563,6 @@ module.exports = grammar({
     ),
 
     creation_method_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.member_declaration_modifier),
       $.symbol,
       '(',
@@ -575,18 +573,19 @@ module.exports = grammar({
       choice($.block, ';')
     ),
 
-    delegate_declaration_modifier: $ => seq(
+    delegate_declaration_modifier: $ => choice(
+      $.access_modifier,
       'async',
       'class',
       'extern',
       'inline',
       'abstract',
       'virtual',
-      'override'
+      'override',
+      'static'
     ),
 
     delegate_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.delegate_declaration_modifier),
       'delegate',
       $.type,
@@ -600,7 +599,6 @@ module.exports = grammar({
     ),
 
     method_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.member_declaration_modifier),
       $.type,
       $.symbol,
@@ -614,6 +612,7 @@ module.exports = grammar({
     ),
 
     signal_declaration_modifier: $ => choice(
+      $.access_modifier,
       'async',
       'extern',
       'inline',
@@ -624,7 +623,6 @@ module.exports = grammar({
     ),
 
     signal_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.signal_declaration_modifier),
       'signal',
       $.type,
@@ -636,7 +634,6 @@ module.exports = grammar({
     ),
 
     field_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.member_declaration_modifier),
       $.type,
       $.identifier,
@@ -646,7 +643,6 @@ module.exports = grammar({
     ),
 
     constant_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.member_declaration_modifier),
       'const',
       $.type,
@@ -669,7 +665,6 @@ module.exports = grammar({
     ),
     
     property_declaration: $ => seq(
-      optional($.access_modifier),
       repeat($.member_declaration_modifier),
       $.type,
       $.symbol,
@@ -936,6 +931,12 @@ module.exports = grammar({
      $.type_declaration_modifier,
      $.signal_declaration_modifier],                                    // ambiguity between all three
     [$.member_declaration_modifier, $.delegate_declaration_modifier],   // both can start with 'new'
+    [$.member_declaration_modifier, $.delegate_declaration_modifier, $.signal_declaration_modifier],
+    [$.member_declaration_modifier, $.type_declaration_modifier, $.delegate_declaration_modifier],
+    [$.member_declaration_modifier, $.type_declaration_modifier, $.delegate_declaration_modifier, $.signal_declaration_modifier],
+    [$.member_declaration_modifier, $.delegate_declaration_modifier, $.signal_declaration_modifier, $.constructor_declaration_modifier],
+    [$.member_declaration_modifier, $.type_declaration_modifier, $.delegate_declaration_modifier, $.constructor_declaration_modifier],
+    [$.member_declaration_modifier, $.type_declaration_modifier, $.delegate_declaration_modifier, $.signal_declaration_modifier, $.constructor_declaration_modifier],
     [$.array_creation_expression, $.member_declaration_modifier],       // because both can start with 'new ('
     [$.array_creation_expression,
      $.object_creation_expression,

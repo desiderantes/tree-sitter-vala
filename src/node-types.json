@@ -2333,10 +2333,6 @@
       "required": true,
       "types": [
         {
-          "type": "access_modifier",
-          "named": true
-        },
-        {
           "type": "class_member",
           "named": true
         },
@@ -2430,10 +2426,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "access_modifier",
-          "named": true
-        },
         {
           "type": "addressof_expression",
           "named": true
@@ -2643,10 +2635,6 @@
       "required": true,
       "types": [
         {
-          "type": "access_modifier",
-          "named": true
-        },
-        {
           "type": "addressof_expression",
           "named": true
         },
@@ -2830,10 +2818,6 @@
       "required": true,
       "types": [
         {
-          "type": "access_modifier",
-          "named": true
-        },
-        {
           "type": "delegate_declaration_modifier",
           "named": true
         },
@@ -2859,7 +2843,17 @@
   {
     "type": "delegate_declaration_modifier",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "access_modifier",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "delete_statement",
@@ -4327,10 +4321,6 @@
       "required": true,
       "types": [
         {
-          "type": "access_modifier",
-          "named": true
-        },
-        {
           "type": "attribute",
           "named": true
         },
@@ -4871,10 +4861,6 @@
       "required": true,
       "types": [
         {
-          "type": "access_modifier",
-          "named": true
-        },
-        {
           "type": "attribute",
           "named": true
         },
@@ -5068,10 +5054,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "access_modifier",
-          "named": true
-        },
         {
           "type": "addressof_expression",
           "named": true
@@ -6385,10 +6367,6 @@
       "required": true,
       "types": [
         {
-          "type": "access_modifier",
-          "named": true
-        },
-        {
           "type": "interface_member",
           "named": true
         },
@@ -7620,7 +7598,17 @@
   {
     "type": "member_declaration_modifier",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "access_modifier",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "member_initializer",
@@ -7968,10 +7956,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "access_modifier",
-          "named": true
-        },
         {
           "type": "addressof_expression",
           "named": true
@@ -9138,10 +9122,6 @@
       "required": true,
       "types": [
         {
-          "type": "access_modifier",
-          "named": true
-        },
-        {
           "type": "member_declaration_modifier",
           "named": true
         },
@@ -9662,10 +9642,6 @@
       "required": true,
       "types": [
         {
-          "type": "access_modifier",
-          "named": true
-        },
-        {
           "type": "block",
           "named": true
         },
@@ -9691,7 +9667,17 @@
   {
     "type": "signal_declaration_modifier",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "access_modifier",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "sizeof_expression",
@@ -10157,10 +10143,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "access_modifier",
-          "named": true
-        },
         {
           "type": "struct_member",
           "named": true
@@ -11216,7 +11198,17 @@
   {
     "type": "type_declaration_modifier",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "access_modifier",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "type_relational_expression",
@@ -12661,6 +12653,10 @@
   },
   {
     "type": "return",
+    "named": false
+  },
+  {
+    "type": "sealed",
     "named": false
   },
   {
