@@ -121,3 +121,75 @@ void main() {
                   (identifier)
                   (literal
                     (integer)))))))))))
+
+
+========================
+Numeric literal suffixes
+========================
+
+void main() {
+    int64 a = 4711LL;
+    uint64 b = 2ULL;
+    int c = 0x10L;
+    double d = 42d;
+    double e = 23.42D;
+    float f = 10f;
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (real))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (real))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (real))))))))

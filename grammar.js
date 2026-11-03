@@ -271,40 +271,65 @@ module.exports = grammar({
     ),
 
     boolean: $ => choice('true', 'false'),
-    character: $ => /'(\S+|\s)'/,
-    integer: $ => choice(/([1-9]\d*|0[0-7]*)[UuLl]?/, /0[xX][A-Fa-f0-9]+/),
+    character: $ => token(seq(
+      "'",
+      choice(
+        /[^'\\\n]/,
+        /\\([abefnrtv\\\x27"?0$ ]|[0-7]{1,3}|[xX][0-9a-fA-F]+|[uU][0-9a-fA-F]+|.)/
+      ),
+      "'"
+    )),
+    integer: $ => token(seq(
+      choice(
+        /0[xX][0-9a-fA-F]+/,
+        /[0-9]+/
+      ),
+      optional(choice(
+        /[uU][lL]{0,2}/,
+        /[lL]{1,2}[uU]?/
+      ))
+    )),
     null: $ => 'null',
-    real: $ => /\d+(\.\d+)?([eE][+-]?\d+)?[Ff]?/,
+    real: $ => token(choice(
+      /([0-9]+\.[0-9]+([eE][+-]?[0-9]+)?|[0-9]+[eE][+-]?[0-9]+)[fFdD]?/,
+      /[0-9]+[fFdD]/
+    )),
     regex: $ => /\/([^\\\/\n]|\\[\\\/A-z0|\[\]^$?.(){}+\-*])+\/[gmxsu]*/,
     string: $ => seq(
       '"',
       repeat(choice(
         token(prec(2, /[^"%\\]+/)),
         $.escape_sequence,
-        /\\[^abefnrtv\\'"? xXuU]/,
+        /\\[^abefnrtv\\\x27"?0$ xXuU]/,
         $.string_formatter,
         /%[^$#0\- +'I\d\\.hlqLjzZtdiouxXeEfFgGaAcsCSpnm%"]/
       )),
       token(prec(2, '"'))
     ),
-    escape_sequence: $ => /\\([abefnrtv\\'"? ]|[0-7]{3}|[xX][A-Fa-f0-9]{2}|[uU][A-Fa-f0-9]{4,8})/,
+    escape_sequence: $ => token(/\\([abefnrtv\\\x27"?0$ ]|[0-7]{1,3}|[xX][0-9a-fA-F]+|[uU][0-9a-fA-F]{4,8})/),
     string_formatter: $ => /%\$?[#0\- +'I]?\d*(\.\d+)?(hh?|ll?|q|L|j|z|Z|t)?[diouxXeEfFgGaAcsCSpnm%]?/,
     template_string: $ => seq(
       '@"',
-      repeat(choice(token(prec(2, /([^$"]+|\\")+/)), $.template_string_expression, '$$')),
+      repeat(choice(
+        token(prec(2, /([^$"\\]|\\.)+/)),
+        $.template_string_expression,
+        '$$'
+      )),
       token(prec(2, '"'))
     ),
     template_string_expression: $ => choice(
       seq('$(', $._expression, ')'),
       seq('$', $.identifier)
     ),
-    verbatim_string: $=> seq(
+    verbatim_string: $ => token(seq(
       '"""',
-      repeat(
-        /(.|\n)/,
-      ),
+      repeat(choice(
+        /[^"]+/,
+        /"[^"]/,
+        /""[^"]/
+      )),
       '"""'
-    ),
+    )),
 
     literal: $ => choice(
         $.boolean,

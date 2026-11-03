@@ -6384,11 +6384,6 @@
     }
   },
   {
-    "type": "integer",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "interface_declaration",
     "named": true,
     "fields": {},
@@ -11447,11 +11442,6 @@
     }
   },
   {
-    "type": "verbatim_string",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "while_statement",
     "named": true,
     "fields": {},
@@ -12260,10 +12250,6 @@
     "named": false
   },
   {
-    "type": "\"\"\"",
-    "named": false
-  },
-  {
     "type": "$",
     "named": false
   },
@@ -12593,6 +12579,10 @@
     "named": false
   },
   {
+    "type": "integer",
+    "named": true
+  },
+  {
     "type": "interface",
     "named": false
   },
@@ -12747,6 +12737,10 @@
   {
     "type": "var",
     "named": false
+  },
+  {
+    "type": "verbatim_string",
+    "named": true
   },
   {
     "type": "virtual",
