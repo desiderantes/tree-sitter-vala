@@ -33,7 +33,9 @@ jobs:
             libglib2.0-dev \
             meson \
             ninja-build \
-            git
+            git \
+            nodejs \
+            npm
 
       - name: Install tree-sitter C library (v0.27.1)
         run: |
@@ -41,6 +43,10 @@ jobs:
           make -C /tmp/tree-sitter
           sudo make -C /tmp/tree-sitter install PREFIX=/usr LIBDIR=/usr/lib/$(uname -m)-linux-gnu INCLUDEDIR=/usr/include
           sudo ldconfig
+
+      - name: Install tree-sitter CLI
+        run: |
+          npm install -g tree-sitter-cli@0.27.1
 
       - name: Build tree-sitter-vala and Test Suite
         run: |
