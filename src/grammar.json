@@ -630,6 +630,18 @@
       "type": "SEQ",
       "members": [
         {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "?"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
           "type": "STRING",
           "value": "["
         },
@@ -6691,6 +6703,11 @@
     [
       "_expression",
       "_left_contained_expression"
+    ],
+    [
+      "_expression",
+      "_left_contained_expression",
+      "element_access_expression"
     ]
   ],
   "precedences": [],

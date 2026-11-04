@@ -157,6 +157,7 @@ module.exports = grammar({
     ),
 
     element_access: $ => seq(
+      optional('?'),
       '[',
       comma_sep1(choice($._expression, $.slice_expression)),
       ']'
@@ -1026,7 +1027,8 @@ module.exports = grammar({
     [$.element_access_expression],                                      // for ambiguity because of contained expressions
     [$.initializer, $.block],                                           // because {} is ambiguous in statement-expression contexts
     [$.if_statement],                                                   // because of ambiguity with nested if statements
-    [$._expression, $._left_contained_expression]
+    [$._expression, $._left_contained_expression],
+    [$._expression, $._left_contained_expression, $.element_access_expression]
   ],
 
   extras: $ => [

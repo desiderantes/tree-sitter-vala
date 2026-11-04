@@ -792,3 +792,50 @@ void main () {
             (argument
               (member_access_expression
                 (identifier)))))))))
+
+==========================================
+Null-conditional element and slice access
+==========================================
+
+void main () {
+    int? i = a?[3];
+    int[]? s = a?[1:3];
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (element_access_expression
+              (member_access_expression
+                (identifier))
+              (element_access
+                (literal
+                  (integer))))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier))
+            (array_type))
+          (assignment
+            (identifier)
+            (element_access_expression
+              (member_access_expression
+                (identifier))
+              (element_access
+                (slice_expression
+                  (literal
+                    (integer))
+                  (literal
+                    (integer)))))))))))
