@@ -26,3 +26,38 @@ namespace Foo {
     (namespace_declaration (symbol (identifier))
       (namespace_member
         (namespace_declaration (symbol (identifier)))))))
+
+==========================================
+Errordomain methods without error codes
+==========================================
+
+public errordomain DBusError {
+    public static void set_dbus_error (string message) throws GLib.DBusError;
+}
+
+---
+
+(source_file
+  (namespace_member
+    (errordomain_declaration
+      (type_declaration_modifier
+        (access_modifier))
+      (symbol
+        (identifier))
+      (method_declaration
+        (member_declaration_modifier
+          (access_modifier))
+        (member_declaration_modifier)
+        (type)
+        (symbol
+          (identifier))
+        (parameter
+          (type
+            (symbol
+              (identifier)))
+          (identifier))
+        (type
+          (symbol
+            (symbol
+              (identifier))
+            (identifier)))))))

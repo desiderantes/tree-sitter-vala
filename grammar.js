@@ -548,11 +548,16 @@ module.exports = grammar({
       'errordomain',
       field('name', $.symbol),
       '{',
-      comma_sep1(field('value', $.errorcode)),
-      optional(choice(
-        ',',    // support trailing ','
-        seq(';', repeat(seq(repeat($._attribute_list), $.method_declaration)))
-      )),
+      choice(
+        seq(
+          comma_sep1(field('value', $.errorcode)),
+          optional(choice(
+            ',',    // support trailing ','
+            seq(';', repeat(seq(repeat($._attribute_list), $.method_declaration)))
+          ))
+        ),
+        repeat(seq(repeat($._attribute_list), $.method_declaration))
+      ),
       '}'
     ),
 
