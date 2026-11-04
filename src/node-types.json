@@ -8178,6 +8178,10 @@
           "named": true
         },
         {
+          "type": "type_arguments",
+          "named": true
+        },
+        {
           "type": "type_relational_expression",
           "named": true
         },
@@ -8550,10 +8554,6 @@
           },
           {
             "type": "this_access",
-            "named": true
-          },
-          {
-            "type": "type_arguments",
             "named": true
           },
           {

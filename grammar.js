@@ -147,7 +147,8 @@ module.exports = grammar({
         ),
         'global::'
       )),
-      $.identifier
+      $.identifier,
+      optional($.type_arguments)
     ),
 
     element_access_expression: $ => seq(
@@ -176,7 +177,6 @@ module.exports = grammar({
     method_call_expression: $ => seq(
       field('function', choice(
         seq('(', $._expression, ')'),
-        seq($.member_access_expression, optional($.type_arguments)),
         $._contained_expression
       )),
       '(',
@@ -1020,7 +1020,7 @@ module.exports = grammar({
     [$.type],                                                           // disambiguate between 'X as <type *> ...'  and '(X as <type>)* ...'
     [$.array_type],                                                     // when 'X[]? ...' could also be '(X[]) ? ...'
     [$.symbol, $.type],                                                 // for object creation expression
-    [$._expression, $.method_call_expression],                          // 'X <' may be start of comparison or method call
+    [$.member_access_expression],                                       // disambiguate type arguments in member access vs comparison
     [$._contained_expression, $.method_call_expression],                // for ambiguity because of contained expressions
     [$._expression, $.element_access_expression],                       // because EAEs have a prefix that is a member access
     [$.element_access_expression],                                      // for ambiguity because of contained expressions

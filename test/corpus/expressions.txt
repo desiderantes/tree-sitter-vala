@@ -750,3 +750,45 @@ class Foo {
             (identifier)
             (literal
               (string))))))))
+
+==========================================
+Generic member access and static method calls
+==========================================
+
+void main () {
+    Foo<string>.bar ();
+    bar_async<Foo>.begin (foo);
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (member_access_expression
+                (identifier)
+                (type_arguments
+                  (type
+                    (symbol
+                      (identifier)))))
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (member_access_expression
+                (identifier)
+                (type_arguments
+                  (type
+                    (symbol
+                      (identifier)))))
+              (identifier))
+            (argument
+              (member_access_expression
+                (identifier)))))))))
