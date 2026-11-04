@@ -13,8 +13,18 @@ Parser create_parser () {
 void test_language () {
 	unowned Language language = vala_language ();
 	assert (language.symbol_count () > 0);
-	assert (language.symbol_for_name ("class_declaration") != 0);
-	assert (language.field_id_for_name ("expression") != 0);
+
+	Symbol sym = language.symbol_for_name ("class_declaration");
+	assert (sym != 0);
+	assert (language.symbol_name (sym) == "class_declaration");
+	assert (language.symbol_type (sym) == SymbolType.REGULAR);
+
+	FieldId expr_field = language.field_id_for_name ("expression");
+	assert (expr_field != 0);
+	assert (language.field_name_for_id (expr_field) == "expression");
+
+	StateId next_st = language.next_state (1, sym);
+	assert (next_st >= 0);
 
 	Language language_dup = language.dup ();
 	assert (language_dup.symbol_count () == language.symbol_count ());
@@ -22,6 +32,9 @@ void test_language () {
 	LookaheadIterator? lookahead = LookaheadIterator.create (language, 1);
 	assert (lookahead != null);
 	assert (lookahead.next ());
+	Symbol lk_sym = lookahead.current_symbol ();
+	assert (lk_sym == TreeSitter.ParserInternals.BUILTIN_SYM_END);
+	assert (lookahead.current_symbol_name () == "end");
 }
 
 void test_parse_string_and_bytes () {
@@ -60,10 +73,20 @@ void test_node_properties () {
 	assert (root.named_child (0).parent.equal (root));
 	assert (root.language.symbol_count () > 0);
 
+	Symbol root_sym = root.symbol;
+	assert (root_sym != 0);
+	assert (root.grammar_symbol == root_sym);
+	StateId state = root.parse_state;
+	assert (state >= 0);
+	assert (root.next_parse_state >= 0);
+
 	TreeSitter.Tree directive_tree = parser.parse_string ("#if FOO\n#endif\n");
 	TreeSitter.Node if_directive = directive_tree.root_node ().named_child (0);
 	assert (if_directive.type == "if_directive");
 	assert (!if_directive.child_by_field_name ("expression").is_null);
+
+	FieldId expr_id = root.language.field_id_for_name ("expression");
+	assert (!if_directive.child_by_field_id (expr_id).is_null);
 }
 
 void test_tree_cursor () {
@@ -72,6 +95,9 @@ void test_tree_cursor () {
 	TreeSitter.Tree tree = parser.parse_string ("class Example {}\n");
 	TreeCursor cursor = TreeCursor (tree.root_node ());
 	assert (cursor.goto_first_child ());
+
+	FieldId fid = cursor.current_field_id ();
+	assert (fid >= 0);
 
 	TreeCursor copy = cursor.copy ();
 	assert (copy.current_node ().equal (cursor.current_node ()));
@@ -186,6 +212,31 @@ void test_query () {
 	assert (query.capture_count () == 2);
 }
 
+
+void test_parser_internals () {
+	unowned ValaLanguage vala_lang = vala_language ();
+	unowned Language base_lang = vala_lang; // ValaLanguage inherits from Language
+	assert (base_lang.symbol_count () == vala_lang.symbol_count);
+	assert (vala_lang.symbol_count > 0);
+	assert (vala_lang.abi_version == 15);
+	assert (vala_lang.symbol_names[0] == "end");
+	assert (TreeSitter.ParserInternals.SERIALIZATION_BUFFER_SIZE == 1024);
+	assert (TreeSitter.ParserInternals.BUILTIN_SYM_END == 0);
+
+	TreeSitter.ParserInternals.CharacterRange[] ranges = {
+		{ 65, 90 }, // A-Z
+		{ 97, 122 } // a-z
+	};
+	assert (TreeSitter.ParserInternals.set_contains (ranges, 66)); // B
+	assert (!TreeSitter.ParserInternals.set_contains (ranges, 64)); // @
+
+	void* ptr = TreeSitter.Allocator.malloc (64);
+	assert (ptr != null);
+	ptr = TreeSitter.Allocator.realloc (ptr, 128);
+	assert (ptr != null);
+	TreeSitter.Allocator.free (ptr);
+}
+
 int main (string[] args) {
 	Test.init (ref args);
 
@@ -196,6 +247,7 @@ int main (string[] args) {
 	Test.add_func ("/tree_sitter/edits", test_edits);
 	Test.add_func ("/tree_sitter/callbacks", test_callbacks);
 	Test.add_func ("/tree_sitter/query", test_query);
+	Test.add_func ("/tree_sitter/parser_internals", test_parser_internals);
 
 	return Test.run ();
 }

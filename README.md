@@ -1,11 +1,17 @@
 # tree-sitter-vala
 
-A Tree-sitter grammar and Vala integration library for the [Vala programming language](https://wiki.gnome.org/Projects/Vala).
+A Tree-sitter grammar and Vala integration library for
+the [Vala programming language](https://wiki.gnome.org/Projects/Vala).
 
 This repository provides:
-- **Tree-sitter Grammar for Vala**: Accurate grammar definitions and generated parser for syntax highlighting, code navigation, and AST tooling.
-- **Tree-sitter VAPI Bindings**: A comprehensive VAPI (`vapi/tree-sitter.vapi`) that exposes the Tree-sitter C API directly to Vala code with idiomatic types and memory safety.
-- **Compiled Vala Library (`libtree-sitter-vala`)**: A Meson-packaged shared library and VAPI (`vapi/tree-sitter-vala.vapi`) making the compiled Tree-sitter Vala parser immediately callable and ready to use in any Vala application or library (such as formatters, language servers, or linters).
+
+- **Tree-sitter Grammar for Vala**: Accurate grammar definitions and generated parser for syntax highlighting, code
+  navigation, and AST tooling.
+- **Tree-sitter VAPI Bindings**: A comprehensive VAPI (`vapi/tree-sitter.vapi`) that exposes the Tree-sitter C API
+  directly to Vala code with idiomatic types and memory safety.
+- **Compiled Vala Library (`libtree-sitter-vala`)**: A Meson-packaged shared library and VAPI
+  (`vapi/tree-sitter-vala.vapi`) making the compiled Tree-sitter Vala parser immediately callable and ready to use in
+  any Vala application or library (such as formatters, language servers, or linters).
 
 ---
 
@@ -14,6 +20,7 @@ This repository provides:
 This project uses the Meson build system.
 
 ### Dependencies
+
 - `meson` (>= 1.10.0) & `ninja`
 - `valac`
 - `tree-sitter` (>= 0.25.0)
@@ -39,15 +46,18 @@ meson test -C build --verbose
 sudo ninja -C build install
 ```
 
-When installed, `tree-sitter-vala.pc` and both VAPI files (`tree-sitter.vapi`, `tree-sitter-vala.vapi`) are installed into system paths for easy consumption via `pkg-config --pkg tree-sitter-vala`.
+When installed, `tree-sitter-vala.pc` and both VAPI files (`tree-sitter.vapi`, `tree-sitter-vala.vapi`) are installed
+into system paths for easy consumption via `pkg-config --pkg tree-sitter-vala`.
 
 ---
 
 ## Validating Against Real-World Codebases
 
-To track coverage and ensure the grammar reliably parses real-world Vala code in the wild, the project includes a dedicated validation tool (`tree-sitter-vala-codebase-test`).
+To track coverage and ensure the grammar reliably parses real-world Vala code in the wild, the project includes a
+dedicated validation tool (`tree-sitter-vala-codebase-test`).
 
-This tool recursively traverses any Vala codebase, parses every source file using `libtree-sitter-vala`, collects pass/fail metrics, and outputs exact error locations and snippets for files that encounter syntax errors:
+This tool recursively traverses any Vala codebase, parses every source file using `libtree-sitter-vala`, collects
+pass/fail metrics, and outputs exact error locations and snippets for files that encounter syntax errors:
 
 ```bash
 # Validate against any local repository or directory
@@ -59,8 +69,10 @@ This tool recursively traverses any Vala codebase, parses every source file usin
 ```
 
 Parameters:
+
 - `--codebase <path>`: Target codebase directory to scan and validate.
-- `--exclude <pattern>` (or `-e`): Exclude paths matching a GLib glob pattern (e.g. `"build/*"`, `"*preprocessor*.vala"`). Can be specified multiple times.
+- `--exclude <pattern>` (or `-e`): Exclude paths matching a GLib glob pattern (e.g. `"build/*"`,
+  `"*preprocessor*.vala"`). Can be specified multiple times.
 - `--log-file <path>`: Output detailed Markdown log of all parse errors with line numbers and source snippets.
 - `--summary`: Output a Markdown summary to `$GITHUB_STEP_SUMMARY` in CI environments.
 
@@ -81,7 +93,8 @@ Parameters:
    meson test -C build
    ```
 
-You can also use `tree-sitter parse <file>` and `tree-sitter highlight <file>` to inspect syntax trees and token highlighting directly.
+You can also use `tree-sitter parse <file>` and `tree-sitter highlight <file>` to inspect syntax trees and token
+highlighting directly.
 
 ---
 
@@ -93,7 +106,8 @@ For Neovim integration, install this grammar with:
 :TSInstall vala
 ```
 
-And install the [vala.vim](https://github.com/vala-lang/vala.vim) plugin to recognize the filetype. For [vim-plug](https://github.com/junegunn/vim-plug):
+And install the [vala.vim](https://github.com/vala-lang/vala.vim) plugin to recognize the filetype.
+For [vim-plug](https://github.com/junegunn/vim-plug):
 
 ```vim
 Plug 'vala-lang/vala.vim'
@@ -104,3 +118,18 @@ Then run:
 ```vim
 :PlugUpdate
 ```
+
+---
+
+## Compatibility
+
+### Keyword Escaping (`@keyword`)
+
+`valac` allows certain statement keywords (such as `if`, `switch`, `while`, `return`, `with`) to appear
+unescaped in statement positions (e.g. `int if; if = 1;`), just emitting compiler warnings encouraging the use of the
+`@` prefix (`@if`, `@switch`, etc.).
+
+This grammar explicitly **does not support unescaped statement keywords** as identifiers in statement and expression
+positions to preserve our sanity and avoid ambiguous statement reductions. In idiomatic Vala code, escaping keywords
+with `@` (e.g. `int @if = 1;`, `@if = 2;`) is the standard practice and is fully supported by both `valac` and this
+grammar.

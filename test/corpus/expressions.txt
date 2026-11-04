@@ -918,3 +918,100 @@ void main () {
             (identifier)
             (literal
               (integer))))))))
+
+==========================================
+Keywords escaped with @ as identifiers
+==========================================
+
+void main () {
+    int @if = 1;
+    assert (@if == 1);
+    int @switch = 2;
+    assert (@switch == 2);
+    int @while = 3;
+    assert (@while == 3);
+    int @return = 9;
+    assert (@return == 9);
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (identifier))
+            (argument
+              (equality_expression
+                (member_access_expression
+                  (identifier))
+                (literal
+                  (integer))))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (identifier))
+            (argument
+              (equality_expression
+                (member_access_expression
+                  (identifier))
+                (literal
+                  (integer))))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (identifier))
+            (argument
+              (equality_expression
+                (member_access_expression
+                  (identifier))
+                (literal
+                  (integer))))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (identifier))
+            (argument
+              (equality_expression
+                (member_access_expression
+                  (identifier))
+                (literal
+                  (integer))))))))))

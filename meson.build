@@ -16,22 +16,20 @@ gio_dep = dependency('gio-2.0')
 
 tree_sitter_dep = dependency('tree-sitter')
 tree_sitter_lib = cc.find_library('tree-sitter')
-tree_sitter_bin = find_program('tree-sitter', required: false)
+tree_sitter_bin = find_program('tree-sitter', required: true)
 grammar_file = files('grammar.js')
-if tree_sitter_bin.found()
-    run_target(
+run_target(
+    'generate',
+    command: [
+        tree_sitter_bin,
         'generate',
-        command: [
-            tree_sitter_bin,
-            'generate',
-            '--abi',
-            '15',
-            '-o',
-            meson.current_source_dir() / 'src',
-            grammar_file,
-        ],
-    )
-endif
+        '--abi',
+        '15',
+        '-o',
+        meson.current_source_dir() / 'src',
+        grammar_file,
+    ],
+)
 
 inc = include_directories('src')
 vapi_dir = meson.current_source_dir() / 'vapi'
@@ -107,38 +105,37 @@ if get_option('tests')
         suite: 'library',
     )
 
-    if tree_sitter_bin.found()
-        corpus_files = files(
-            'test/corpus/attributes.txt',
-            'test/corpus/expressions.txt',
-            'test/corpus/methods.txt',
-            'test/corpus/namespaces.txt',
-            'test/corpus/preprocessor.txt',
-            'test/corpus/strings.txt',
-            'test/corpus/using-directives.txt',
-        )
 
-        corpus_stamp = custom_target(
-            'corpus-stamp',
-            input: corpus_files,
-            output: 'corpus.stamp',
-            command: [find_program('touch'), '@OUTPUT@'],
-            build_by_default: false,
-        )
+    corpus_files = files(
+        'test/corpus/attributes.txt',
+        'test/corpus/expressions.txt',
+        'test/corpus/methods.txt',
+        'test/corpus/namespaces.txt',
+        'test/corpus/preprocessor.txt',
+        'test/corpus/strings.txt',
+        'test/corpus/using-directives.txt',
+    )
 
-        test(
-            'corpus',
-            tree_sitter_bin,
-            args: [
-                'test',
-                '--lib-path',
-                tree_sitter_vala_lib.full_path(),
-                '--lang-name',
-                'vala',
-            ],
-            workdir: meson.current_source_dir(),
-            suite: 'grammar',
-            depends: [tree_sitter_vala_lib, corpus_stamp],
-        )
-    endif
+    corpus_stamp = custom_target(
+        'corpus-stamp',
+        input: corpus_files,
+        output: 'corpus.stamp',
+        command: [find_program('touch'), '@OUTPUT@'],
+        build_by_default: false,
+    )
+
+    test(
+        'corpus',
+        tree_sitter_bin,
+        args: [
+            'test',
+            '--lib-path',
+            tree_sitter_vala_lib.full_path(),
+            '--lang-name',
+            'vala',
+        ],
+        workdir: meson.current_source_dir(),
+        suite: 'grammar',
+        depends: [tree_sitter_vala_lib, corpus_stamp],
+    )
 endif

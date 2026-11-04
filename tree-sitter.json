@@ -23,10 +23,14 @@
       {
         "name": "Princeton Ferro",
         "email": "princetonferro@gmail.com"
+      },
+      {
+        "name": "Mario Daniel Ruiz Saavedra",
+        "email": "desiderantes93@gmail.com"
       }
     ],
     "links": {
-      "repository": "https://github.com/vala-lang/tree-sitter-vala"
+      "repository": "https://github.com/desiderantes/tree-sitter-vala"
     }
   }
 }
