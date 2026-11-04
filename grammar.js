@@ -113,7 +113,7 @@ module.exports = grammar({
 
     // expressions that never need to be wrapped in parentheses
     _contained_expression: $ => choice(
-        seq('(', $._expression, ')'),
+        seq('(', comma_sep1($._expression), ')'),
         $.literal,
         $.array_creation_expression,
         $.object_creation_expression,
@@ -756,11 +756,22 @@ module.exports = grammar({
       field('body', $.block)
     ),
 
-    local_declaration: $ => seq(
-      optional('const'),
-      field('type', $.type),
-      comma_sep1(field('declarator', $.assignment)),
-      ';'
+    local_declaration: $ => choice(
+      seq(
+        optional('const'),
+        field('type', $.type),
+        comma_sep1(field('declarator', $.assignment)),
+        ';'
+      ),
+      seq(
+        'var',
+        '(',
+        comma_sep1($.identifier),
+        ')',
+        '=',
+        field('value', $._expression),
+        ';'
+      )
     ),
 
     local_function_declaration: $ => seq(
@@ -1008,6 +1019,7 @@ module.exports = grammar({
      $.constructor_declaration_modifier],                               // these start with 'class'
     [$.symbol, $.member_access_expression],                             // disambiguate member access and static cast expressions
     [$.symbol, $.member_access_expression, $.lambda_expression],        // head of lambda expression may be head of symbol or MA
+    [$.member_access_expression, $.lambda_expression],
     [$.type],                                                           // disambiguate between 'X as <type *> ...'  and '(X as <type>)* ...'
     [$.array_type],                                                     // when 'X[]? ...' could also be '(X[]) ? ...'
     [$.symbol, $.type],                                                 // for object creation expression

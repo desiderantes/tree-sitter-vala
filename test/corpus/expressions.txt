@@ -568,3 +568,45 @@ void main () {
               (member_access_expression
                 (identifier))
               (identifier))))))))
+
+==========================================
+Tuples and tuple deconstruction
+==========================================
+
+void main () {
+    (s, n) = FOO;
+    var (test, test2) = new int[] { 23, 51 };
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (expression_statement
+          (assignment_expression
+            (member_access_expression
+              (identifier))
+            (member_access_expression
+              (identifier))
+            (member_access_expression
+              (identifier))))
+        (local_declaration
+          (identifier)
+          (identifier)
+          (array_creation_expression
+            (type
+              (symbol
+                (identifier)))
+            (inline_array_type)
+            (initializer
+              (argument
+                (literal
+                  (integer)))
+              (argument
+                (literal
+                  (integer))))))))))
