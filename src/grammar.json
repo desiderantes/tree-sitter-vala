@@ -914,8 +914,34 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "identifier"
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "out"
+                        },
+                        {
+                          "type": "STRING",
+                          "value": "ref"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                }
+              ]
             },
             {
               "type": "SEQ",
@@ -931,8 +957,34 @@
                       "type": "SEQ",
                       "members": [
                         {
-                          "type": "SYMBOL",
-                          "name": "identifier"
+                          "type": "SEQ",
+                          "members": [
+                            {
+                              "type": "CHOICE",
+                              "members": [
+                                {
+                                  "type": "CHOICE",
+                                  "members": [
+                                    {
+                                      "type": "STRING",
+                                      "value": "out"
+                                    },
+                                    {
+                                      "type": "STRING",
+                                      "value": "ref"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "BLANK"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "SYMBOL",
+                              "name": "identifier"
+                            }
+                          ]
                         },
                         {
                           "type": "REPEAT",
@@ -944,8 +996,34 @@
                                 "value": ","
                               },
                               {
-                                "type": "SYMBOL",
-                                "name": "identifier"
+                                "type": "SEQ",
+                                "members": [
+                                  {
+                                    "type": "CHOICE",
+                                    "members": [
+                                      {
+                                        "type": "CHOICE",
+                                        "members": [
+                                          {
+                                            "type": "STRING",
+                                            "value": "out"
+                                          },
+                                          {
+                                            "type": "STRING",
+                                            "value": "ref"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "type": "BLANK"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "SYMBOL",
+                                    "name": "identifier"
+                                  }
+                                ]
                               }
                             ]
                           }
@@ -6615,6 +6693,9 @@
     ],
     [
       "member_access_expression",
+      "lambda_expression"
+    ],
+    [
       "lambda_expression"
     ],
     [

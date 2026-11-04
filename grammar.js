@@ -189,8 +189,8 @@ module.exports = grammar({
 
     lambda_expression: $ => seq(
       choice(
-        $.identifier,
-        seq('(', comma_sep($.identifier), ')')
+        seq(optional(choice('out', 'ref')), $.identifier),
+        seq('(', comma_sep(seq(optional(choice('out', 'ref')), $.identifier)), ')')
       ),
       '=>',
       choice($._expression, $.block)
@@ -1020,6 +1020,7 @@ module.exports = grammar({
     [$.symbol, $.member_access_expression],                             // disambiguate member access and static cast expressions
     [$.symbol, $.member_access_expression, $.lambda_expression],        // head of lambda expression may be head of symbol or MA
     [$.member_access_expression, $.lambda_expression],
+    [$.lambda_expression],
     [$.type],                                                           // disambiguate between 'X as <type *> ...'  and '(X as <type>)* ...'
     [$.array_type],                                                     // when 'X[]? ...' could also be '(X[]) ? ...'
     [$.symbol, $.type],                                                 // for object creation expression

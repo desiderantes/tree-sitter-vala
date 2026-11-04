@@ -610,3 +610,73 @@ void main () {
               (argument
                 (literal
                   (integer))))))))))
+
+==========================================
+Lambda expressions with ref and out parameters
+==========================================
+
+void main () {
+    assert (do_out_action ((out i) => { i = 4; }) == 4);
+    Deleg1 d1 = ref foo => foo + 5;
+    Deleg2 d2 = (out foo, ref bar) => { foo = 10; };
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (identifier))
+            (argument
+              (equality_expression
+                (method_call_expression
+                  (member_access_expression
+                    (identifier))
+                  (argument
+                    (lambda_expression
+                      (identifier)
+                      (block
+                        (expression_statement
+                          (assignment_expression
+                            (member_access_expression
+                              (identifier))
+                            (literal
+                              (integer))))))))
+                (literal
+                  (integer))))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (lambda_expression
+              (identifier)
+              (arithmetic_expression
+                (member_access_expression
+                  (identifier))
+                (literal
+                  (integer))))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (lambda_expression
+              (identifier)
+              (identifier)
+              (block
+                (expression_statement
+                  (assignment_expression
+                    (member_access_expression
+                      (identifier))
+                    (literal
+                      (integer))))))))))))
