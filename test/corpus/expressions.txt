@@ -539,3 +539,32 @@ void main () {
             (member_access_expression
               (identifier)))
           (block))))))
+
+==========================================
+Global qualified member access
+==========================================
+
+void main () {
+    global::foo ();
+    global::Bar.baz ();
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            (member_access_expression
+              (member_access_expression
+                (identifier))
+              (identifier))))))))

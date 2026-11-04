@@ -532,28 +532,37 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SEQ",
+              "type": "CHOICE",
               "members": [
                 {
-                  "type": "SYMBOL",
-                  "name": "_contained_expression"
-                },
-                {
-                  "type": "CHOICE",
+                  "type": "SEQ",
                   "members": [
                     {
-                      "type": "STRING",
-                      "value": "."
+                      "type": "SYMBOL",
+                      "name": "_contained_expression"
                     },
                     {
-                      "type": "STRING",
-                      "value": "?."
-                    },
-                    {
-                      "type": "STRING",
-                      "value": "->"
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "."
+                        },
+                        {
+                          "type": "STRING",
+                          "value": "?."
+                        },
+                        {
+                          "type": "STRING",
+                          "value": "->"
+                        }
+                      ]
                     }
                   ]
+                },
+                {
+                  "type": "STRING",
+                  "value": "global::"
                 }
               ]
             },

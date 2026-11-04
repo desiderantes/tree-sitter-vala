@@ -140,9 +140,12 @@ module.exports = grammar({
     ),
 
     member_access_expression: $ => seq(
-      optional(seq(
-        $._contained_expression,
-        choice('.', '?.', '->'),
+      optional(choice(
+        seq(
+          $._contained_expression,
+          choice('.', '?.', '->'),
+        ),
+        'global::'
       )),
       $.identifier
     ),
