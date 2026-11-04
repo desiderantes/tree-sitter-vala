@@ -7347,6 +7347,10 @@
         {
           "type": "verbatim_string",
           "named": true
+        },
+        {
+          "type": "verbatim_template_string",
+          "named": true
         }
       ]
     }
@@ -12487,6 +12491,21 @@
     }
   },
   {
+    "type": "verbatim_template_string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "template_string_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "while_statement",
     "named": true,
     "fields": {},
@@ -13332,6 +13351,10 @@
     "named": false
   },
   {
+    "type": "\"\"\"",
+    "named": false
+  },
+  {
     "type": "$",
     "named": false
   },
@@ -13493,6 +13516,10 @@
   },
   {
     "type": "@\"",
+    "named": false
+  },
+  {
+    "type": "@\"\"\"",
     "named": false
   },
   {

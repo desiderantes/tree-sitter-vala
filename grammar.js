@@ -323,6 +323,19 @@ module.exports = grammar({
       )),
       token(prec(2, '"'))
     ),
+    verbatim_template_string: $ => seq(
+      '@"""',
+      repeat(choice(
+        token(prec(2, choice(
+          /[^$"]+/,
+          /"[^"]/,
+          /""[^"]/
+        ))),
+        $.template_string_expression,
+        '$$'
+      )),
+      '"""'
+    ),
     template_string_expression: $ => choice(
       seq('$(', $._expression, ')'),
       seq('$', $.identifier)
@@ -346,7 +359,8 @@ module.exports = grammar({
         $.regex,
         $.string,
         $.template_string,
-        $.verbatim_string
+        $.verbatim_string,
+        $.verbatim_template_string
     ),
 
     type: $ => choice(

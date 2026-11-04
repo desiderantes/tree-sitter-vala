@@ -151,3 +151,46 @@ multiline
       (identifier)
       (literal
         (verbatim_string)))))
+
+==========================================
+Verbatim template strings
+==========================================
+
+void main () {
+    string empty = @"""""";
+    string text = @"""hello $name $(1 + 2) world""";
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (verbatim_template_string))))
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (verbatim_template_string
+                (template_string_expression
+                  (identifier))
+                (template_string_expression
+                  (arithmetic_expression
+                    (literal
+                      (integer))
+                    (literal
+                      (integer))))))))))))
