@@ -350,7 +350,12 @@ module.exports = grammar({
     ),
 
     type: $ => choice(
-      'var',
+      seq(
+        optional('dynamic'),
+        optional(choice('unowned', 'owned', 'weak')),
+        'var',
+        optional('?')
+      ),
       seq(
         optional('dynamic'),
         optional(choice('unowned', 'owned', 'weak')),
@@ -898,7 +903,12 @@ module.exports = grammar({
     ),
 
     with_statement: $ => seq(
-      'with', '(', $._expression, ')',
+      'with', '(',
+      choice(
+        seq(field('type', $.type), field('declarator', $.assignment)),
+        $._expression
+      ),
+      ')',
       $._statement
     ),
 

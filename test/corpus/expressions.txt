@@ -488,3 +488,54 @@ void main () {
             (break_statement))
           (switch_section
             (break_statement)))))))
+
+==========================================
+With statement variable declaration and var modifiers
+==========================================
+
+void main () {
+    with (var f = foo) {
+        f.bar ();
+    }
+    with (unowned var? foo = "foo") {
+    }
+    with (dynamic var bar = foo) {
+    }
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (with_statement
+          (type)
+          (assignment
+            (identifier)
+            (member_access_expression
+              (identifier)))
+          (block
+            (expression_statement
+              (method_call_expression
+                (member_access_expression
+                  (member_access_expression
+                    (identifier))
+                  (identifier))))))
+        (with_statement
+          (type)
+          (assignment
+            (identifier)
+            (literal
+              (string)))
+          (block))
+        (with_statement
+          (type)
+          (assignment
+            (identifier)
+            (member_access_expression
+              (identifier)))
+          (block))))))
