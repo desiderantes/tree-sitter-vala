@@ -20,9 +20,10 @@ int x = 2;
    (type
     (symbol
      (identifier)))
-   (identifier)
-   (literal
-    (integer))))
+   (assignment
+    (identifier)
+    (literal
+     (integer)))))
  (elif_directive
   (identifier))
  (namespace_member
@@ -30,18 +31,20 @@ int x = 2;
    (type
     (symbol
      (identifier)))
-   (identifier)
-   (literal
-    (integer))))
+   (assignment
+    (identifier)
+    (literal
+     (integer)))))
  (else_directive)
  (namespace_member
   (field_declaration
    (type
     (symbol
      (identifier)))
-   (identifier)
-   (literal
-    (integer))))
+   (assignment
+    (identifier)
+    (literal
+     (integer)))))
  (endif_directive))
 
 =======================================================

@@ -680,9 +680,7 @@ module.exports = grammar({
     field_declaration: $ => seq(
       repeat(field('modifier', $.member_declaration_modifier)),
       field('type', $.type),
-      field('name', $.identifier),
-      optional(field('array_dimension', $.inline_array_type)),
-      optional(seq('=', field('value', $._expression))),
+      comma_sep1(field('declarator', $.assignment)),
       ';'
     ),
 
@@ -690,9 +688,7 @@ module.exports = grammar({
       repeat(field('modifier', $.member_declaration_modifier)),
       'const',
       field('type', $.type),
-      field('name', $.identifier),
-      optional(field('array_dimension', $.inline_array_type)),
-      optional(seq('=', field('value', $._expression))),
+      comma_sep1(field('declarator', $.assignment)),
       ';'
     ),
 

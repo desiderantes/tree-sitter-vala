@@ -14,7 +14,7 @@
 (enum_value (identifier) @constant)
 (errordomain_declaration (symbol) @type)
 (errorcode (identifier) @constant)
-(constant_declaration (identifier) @constant)
+(constant_declaration (assignment (identifier) @constant))
 (method_call_expression (member_access_expression (identifier) @function))
 (lambda_expression (identifier) @variable.parameter)
 (parameter (identifier) @variable.parameter)

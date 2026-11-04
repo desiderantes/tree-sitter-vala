@@ -46,7 +46,7 @@
 (enum_value (identifier) @constant)
 (errordomain_declaration (symbol) @type)
 (errorcode (identifier) @constant)
-(constant_declaration (identifier) @constant)
+(constant_declaration (assignment (identifier) @constant))
 (method_call_expression (member_access_expression (identifier) @function))
 ; highlight macros
 (
@@ -56,7 +56,7 @@
 (lambda_expression (identifier) @parameter)
 (parameter (identifier) @parameter)
 (property_declaration (symbol (identifier) @property))
-(field_declaration (identifier) @field)
+(field_declaration (assignment (identifier) @field))
 [
  (this_access)
  (base_access)

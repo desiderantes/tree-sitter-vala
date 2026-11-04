@@ -680,3 +680,73 @@ void main () {
                       (identifier))
                     (literal
                       (integer))))))))))))
+
+==========================================
+Multi-variable field and constant declarations
+==========================================
+
+class Foo {
+    public int a, b, c;
+    public int x, y[2] = { 23, 42 }, z = 4711;
+    const string S1 = "hello", S2 = "world";
+}
+
+---
+
+(source_file
+  (namespace_member
+    (class_declaration
+      (unqualified_type
+        (symbol
+          (identifier)))
+      (class_member
+        (field_declaration
+          (member_declaration_modifier
+            (access_modifier))
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier))
+          (assignment
+            (identifier))
+          (assignment
+            (identifier))))
+      (class_member
+        (field_declaration
+          (member_declaration_modifier
+            (access_modifier))
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier))
+          (assignment
+            (identifier)
+            (inline_array_type
+              (literal
+                (integer)))
+            (initializer
+              (argument
+                (literal
+                  (integer)))
+              (argument
+                (literal
+                  (integer)))))
+          (assignment
+            (identifier)
+            (literal
+              (integer)))))
+      (class_member
+        (constant_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (string)))
+          (assignment
+            (identifier)
+            (literal
+              (string))))))))

@@ -19,13 +19,15 @@ x = "location: C:\\Users";
    (type
     (symbol
      (identifier)))
-   (identifier)))
+   (assignment
+    (identifier))))
  (namespace_member
   (field_declaration
    (type
     (symbol
      (identifier)))
-   (identifier)))
+   (assignment
+    (identifier))))
  (expression_statement
   (assignment_expression
    (member_access_expression
@@ -87,7 +89,8 @@ c = '\u00a9';
       (type
         (symbol
           (identifier)))
-      (identifier)))
+      (assignment
+        (identifier))))
   (expression_statement
     (assignment_expression
       (member_access_expression
@@ -148,9 +151,10 @@ multiline
       (type
         (symbol
           (identifier)))
-      (identifier)
-      (literal
-        (verbatim_string)))))
+      (assignment
+        (identifier)
+        (literal
+          (verbatim_string))))))
 
 ==========================================
 Verbatim template strings
