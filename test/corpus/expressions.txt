@@ -452,3 +452,39 @@ void main () {
               (inline_array_type
                 (literal
                   (integer))))))))))
+
+==========================================
+Switch statement multi-value case labels
+==========================================
+
+void main () {
+    switch (i) {
+    case 0, 1, 2:
+        break;
+    default:
+        break;
+    }
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (switch_statement
+          (member_access_expression
+            (identifier))
+          (switch_section
+            (literal
+              (integer))
+            (literal
+              (integer))
+            (literal
+              (integer))
+            (break_statement))
+          (switch_section
+            (break_statement)))))))

@@ -890,7 +890,7 @@ module.exports = grammar({
 
     switch_section: $ => seq(
       choice(
-        seq('case', $._expression),
+        seq('case', comma_sep1($._expression)),
         'default'
       ),
       ':',
