@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout tree-sitter-vala
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install System Dependencies
         run: |
@@ -68,10 +68,10 @@ jobs:
             --exclude "*preprocessor*.vala" \
             --exclude "*/bug647018.vala" \
             --exclude "*/fixed-length-init0-not-allowed.vala" \
-            --exclude "*/statement-keyword-as-identifier.vala" || true
+            --exclude "*/statement-keyword-as-identifier.vala" 
 
       - name: Upload Failure Log Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always() && !env.ACT
         with:
           name: codebase-failures-report
