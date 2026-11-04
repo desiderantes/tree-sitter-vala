@@ -156,7 +156,7 @@
     },
     "identifier": {
       "type": "PATTERN",
-      "value": "[@A-Za-z_]\\w*"
+      "value": "[@A-Za-z_]\\w*|[0-9]+[A-Za-z_]\\w*"
     },
     "namespace_member": {
       "type": "SEQ",
@@ -2180,51 +2180,55 @@
     "integer": {
       "type": "TOKEN",
       "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "PATTERN",
-                "value": "0[xX][0-9a-fA-F]+"
-              },
-              {
-                "type": "PATTERN",
-                "value": "0[bB][01]+"
-              },
-              {
-                "type": "PATTERN",
-                "value": "0[oO][0-7]+"
-              },
-              {
-                "type": "PATTERN",
-                "value": "[0-9]+"
-              }
-            ]
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "PATTERN",
-                    "value": "[uU][lL]{0,2}"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "[lL]{1,2}[uU]?"
-                  }
-                ]
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          }
-        ]
+        "type": "PREC",
+        "value": 2,
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "PATTERN",
+                  "value": "0[xX][0-9a-fA-F]+"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "0[bB][01]+"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "0[oO][0-7]+"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[0-9]+"
+                }
+              ]
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "PATTERN",
+                      "value": "[uU][lL]{0,2}"
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "[lL]{1,2}[uU]?"
+                    }
+                  ]
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
+          ]
+        }
       }
     },
     "null": {
@@ -2234,21 +2238,25 @@
     "real": {
       "type": "TOKEN",
       "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "PATTERN",
-            "value": "0[xX][0-9a-fA-F]*(\\.[0-9a-fA-F]+)?[pP][+-]?[0-9]+[fFdD]?"
-          },
-          {
-            "type": "PATTERN",
-            "value": "([0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?|[0-9]+[eE][+-]?[0-9]+)[fFdD]?"
-          },
-          {
-            "type": "PATTERN",
-            "value": "[0-9]+[fFdD]"
-          }
-        ]
+        "type": "PREC",
+        "value": 2,
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "0[xX][0-9a-fA-F]*(\\.[0-9a-fA-F]+)?[pP][+-]?[0-9]+[fFdD]?"
+            },
+            {
+              "type": "PATTERN",
+              "value": "([0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?|[0-9]+[eE][+-]?[0-9]+)[fFdD]?"
+            },
+            {
+              "type": "PATTERN",
+              "value": "[0-9]+[fFdD]"
+            }
+          ]
+        }
       }
     },
     "regex": {

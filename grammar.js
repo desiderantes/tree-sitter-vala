@@ -44,7 +44,7 @@ module.exports = grammar({
       seq(optional('global::'), $.identifier)
     ),
 
-    identifier: $ => /[@A-Za-z_]\w*/,
+    identifier: $ => /[@A-Za-z_]\w*|[0-9]+[A-Za-z_]\w*/,
 
     namespace_member: $ => seq(
       repeat($._attribute_list),
@@ -285,7 +285,7 @@ module.exports = grammar({
       ),
       "'"
     )),
-    integer: $ => token(seq(
+    integer: $ => token(prec(2, seq(
       choice(
         /0[xX][0-9a-fA-F]+/,
         /0[bB][01]+/,
@@ -296,13 +296,13 @@ module.exports = grammar({
         /[uU][lL]{0,2}/,
         /[lL]{1,2}[uU]?/
       ))
-    )),
+    ))),
     null: $ => 'null',
-    real: $ => token(choice(
+    real: $ => token(prec(2, choice(
       /0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]+)?[pP][+-]?[0-9]+[fFdD]?/,
       /([0-9]+\.[0-9]+([eE][+-]?[0-9]+)?|[0-9]+[eE][+-]?[0-9]+)[fFdD]?/,
       /[0-9]+[fFdD]/
-    )),
+    ))),
     regex: $ => /\/([^/\\\n]|\\.)+\/[imsxog]*/,
     string: $ => seq(
       '"',

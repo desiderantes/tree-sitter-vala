@@ -875,3 +875,46 @@ void main () {
               (type
                 (symbol
                   (identifier))))))))))
+
+==========================================
+Identifiers starting with a digit
+==========================================
+
+[CCode (cname = "good")]
+int 2good;
+
+void main () {
+    int 3D = 10;
+}
+
+---
+
+(source_file
+  (namespace_member
+    (attribute
+      (identifier)
+      (attribute_argument_list
+        (attribute_argument
+          (identifier)
+          (literal
+            (string)))))
+    (field_declaration
+      (type
+        (symbol
+          (identifier)))
+      (assignment
+        (identifier))))
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type
+            (symbol
+              (identifier)))
+          (assignment
+            (identifier)
+            (literal
+              (integer))))))))
