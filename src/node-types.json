@@ -174,7 +174,18 @@
   {
     "type": "argument",
     "named": true,
-    "fields": {},
+    "fields": {
+      "modifier": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "parameter_direction_modifier",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
@@ -6796,7 +6807,18 @@
   {
     "type": "lambda_expression",
     "named": true,
-    "fields": {},
+    "fields": {
+      "modifier": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "parameter_direction_modifier",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
@@ -8150,6 +8172,10 @@
           "named": true
         },
         {
+          "type": "parameter_direction_modifier",
+          "named": true
+        },
+        {
           "type": "postfix_expression",
           "named": true
         },
@@ -9357,12 +9383,8 @@
         "required": false,
         "types": [
           {
-            "type": "out",
-            "named": false
-          },
-          {
-            "type": "ref",
-            "named": false
+            "type": "parameter_direction_modifier",
+            "named": true
           }
         ]
       },
@@ -9397,6 +9419,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "parameter_direction_modifier",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "postfix_expression",

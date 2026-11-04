@@ -147,7 +147,7 @@ module.exports = grammar({
         ),
         'global::'
       )),
-      $.identifier,
+      choice($.identifier, $.parameter_direction_modifier),
       optional($.type_arguments)
     ),
 
@@ -169,8 +169,7 @@ module.exports = grammar({
     ),
 
     argument: $ => choice(
-      seq('ref', $._expression),
-      seq('out', $._expression),
+      seq(field('modifier', $.parameter_direction_modifier), $._expression),
       $._expression,
       seq($.identifier, ':', $._expression)
     ),
@@ -190,8 +189,8 @@ module.exports = grammar({
 
     lambda_expression: $ => seq(
       choice(
-        seq(optional(choice('out', 'ref')), $.identifier),
-        seq('(', comma_sep(seq(optional(choice('out', 'ref')), $.identifier)), ')')
+        seq(optional(field('modifier', $.parameter_direction_modifier)), $.identifier),
+        seq('(', comma_sep(seq(optional(field('modifier', $.parameter_direction_modifier)), $.identifier)), ')')
       ),
       '=>',
       choice($._expression, $.block)
@@ -585,12 +584,17 @@ module.exports = grammar({
       optional(seq('=', field('value', $._expression)))
     ),
 
+    parameter_direction_modifier: $ => choice(
+      'ref',
+      'out'
+    ),
+
     parameter: $ => seq(
       repeat($._attribute_list),
       choice(
         seq(
           optional('params'),
-          optional(field('modifier', choice('out', 'ref'))),
+          optional(field('modifier', $.parameter_direction_modifier)),
           field('type', $.type),
           field('name', $.identifier),
           optional(field('array_dimension', $.inline_array_type)),
@@ -1022,6 +1026,7 @@ module.exports = grammar({
     [$.array_type],                                                     // when 'X[]? ...' could also be '(X[]) ? ...'
     [$.symbol, $.type],                                                 // for object creation expression
     [$.member_access_expression],                                       // disambiguate type arguments in member access vs comparison
+    [$.member_access_expression, $.argument],
     [$._contained_expression, $.method_call_expression],                // for ambiguity because of contained expressions
     [$._expression, $.element_access_expression],                       // because EAEs have a prefix that is a member access
     [$.element_access_expression],                                      // for ambiguity because of contained expressions

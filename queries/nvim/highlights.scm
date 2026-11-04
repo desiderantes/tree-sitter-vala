@@ -164,8 +164,9 @@
 
 (array_creation_expression "new" @keyword.operator)
 (object_creation_expression "new" @keyword.operator)
-(argument "out" @keyword.operator)
-(argument "ref" @keyword.operator)
+(argument (parameter_direction_modifier) @keyword.operator)
+(parameter (parameter_direction_modifier) @keyword.operator)
+(lambda_expression (parameter_direction_modifier) @keyword.operator)
 
 [
   "continue"

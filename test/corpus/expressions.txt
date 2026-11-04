@@ -641,6 +641,7 @@ void main () {
                     (identifier))
                   (argument
                     (lambda_expression
+                      (parameter_direction_modifier)
                       (identifier)
                       (block
                         (expression_statement
@@ -658,6 +659,7 @@ void main () {
           (assignment
             (identifier)
             (lambda_expression
+              (parameter_direction_modifier)
               (identifier)
               (arithmetic_expression
                 (member_access_expression
@@ -671,7 +673,9 @@ void main () {
           (assignment
             (identifier)
             (lambda_expression
+              (parameter_direction_modifier)
               (identifier)
+              (parameter_direction_modifier)
               (identifier)
               (block
                 (expression_statement
@@ -839,3 +843,35 @@ void main () {
                     (integer))
                   (literal
                     (integer)))))))))))
+
+==========================================
+Method call with keyword identifier in parenthesized expression
+==========================================
+
+void main () {
+    var f = (ref (o)) as Foo;
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      (type)
+      (symbol
+        (identifier))
+      (block
+        (local_declaration
+          (type)
+          (assignment
+            (identifier)
+            (dynamic_cast_expression
+              (method_call_expression
+                (member_access_expression
+                  (parameter_direction_modifier))
+                (argument
+                  (member_access_expression
+                    (identifier))))
+              (type
+                (symbol
+                  (identifier))))))))))
