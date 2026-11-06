@@ -71,8 +71,8 @@ pass/fail metrics, and outputs exact error locations and snippets for files that
 Parameters:
 
 - `--codebase <path>`: Target codebase directory to scan and validate.
-- `--exclude <pattern>` (or `-e`): Exclude paths matching a GLib glob pattern (e.g. `"build/*"`,
-  `"*preprocessor*.vala"`). Can be specified multiple times.
+- `--exclude <pattern>` (or `-e`): Exclude paths matching a GLib glob pattern (e.g. `"build/*"`). Can be specified multiple times.
+- `--expect-fail <pattern>` (or `--negative`, `-x`): Specify patterns for negative test files that are expected to contain syntax errors. If any file matching this pattern parses without syntax errors, it is flagged as an unexpected success (guarding against an overly lenient grammar).
 - `--log-file <path>`: Output detailed Markdown log of all parse errors with line numbers and source snippets.
 - `--summary`: Output a Markdown summary to `$GITHUB_STEP_SUMMARY` in CI environments.
 
@@ -120,16 +120,3 @@ Then run:
 ```
 
 ---
-
-## Compatibility
-
-### Keyword Escaping (`@keyword`)
-
-`valac` allows certain statement keywords (such as `if`, `switch`, `while`, `return`, `with`) to appear
-unescaped in statement positions (e.g. `int if; if = 1;`), just emitting compiler warnings encouraging the use of the
-`@` prefix (`@if`, `@switch`, etc.).
-
-This grammar explicitly **does not support unescaped statement keywords** as identifiers in statement and expression
-positions to preserve our sanity and avoid ambiguous statement reductions. In idiomatic Vala code, escaping keywords
-with `@` (e.g. `int @if = 1;`, `@if = 2;`) is the standard practice and is fully supported by both `valac` and this
-grammar.

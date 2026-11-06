@@ -5,6 +5,10 @@
  * tree-sitter-vala, detects root syntax errors / missing nodes, and prints
  * summary statistics and detailed error locations.
  *
+ * Also supports negative parse matching (--expect-fail): files matching these
+ * patterns are expected to contain syntax errors. If any such file parses without
+ * error, it is recorded as an unexpected success (too lenient grammar).
+ *
  * Exits with code 77 (SKIP) if no codebase directory is given or if the directory
  * does not exist.
  */
@@ -15,13 +19,15 @@ public class ErrorInfo {
 	public uint row;
 	public uint col;
 	public string snippet;
+	public bool is_unexpected_success;
 
-	public ErrorInfo (string file_path, string rel_path, uint row, uint col, string snippet) {
+	public ErrorInfo (string file_path, string rel_path, uint row, uint col, string snippet, bool is_unexpected_success = false) {
 		this.file_path = file_path;
 		this.rel_path = rel_path;
 		this.row = row;
 		this.col = col;
 		this.snippet = snippet;
+		this.is_unexpected_success = is_unexpected_success;
 	}
 }
 
@@ -30,12 +36,16 @@ public class CodebaseTester {
 	public string? log_file = null;
 	public bool write_summary = false;
 	public GenericArray<PatternSpec> exclude_patterns = new GenericArray<PatternSpec> ();
+	public GenericArray<PatternSpec> expect_fail_patterns = new GenericArray<PatternSpec> ();
 
 	private GenericArray<string> vala_files = new GenericArray<string> ();
 	private GenericArray<ErrorInfo> error_details = new GenericArray<ErrorInfo> ();
 	private uint total_parsed = 0;
 	private uint successful_parses = 0;
 	private uint failed_parses = 0;
+	private uint expected_fail_total = 0;
+	private uint expected_fail_passed = 0;
+	private uint unexpected_successes = 0;
 
 	public void add_exclude_pattern (string pattern) {
 		string p = pattern.strip ();
@@ -51,16 +61,29 @@ public class CodebaseTester {
 		exclude_patterns.add (new PatternSpec (p));
 	}
 
+	public void add_expect_fail_pattern (string pattern) {
+		string p = pattern.strip ();
+		if (p == "") {
+			return;
+		}
+
+		if (p.has_suffix ("/")) {
+			p += "*";
+		}
+
+		expect_fail_patterns.add (new PatternSpec (p));
+	}
+
 	public int run () {
 		if (codebase_dir == null || codebase_dir == "") {
 			print ("No codebase directory specified. Skipping codebase validation test.\n");
-			print ("Usage: tree-sitter-vala-codebase-test --codebase <path> [--exclude <pattern>] [--log-file <path>] [--summary]\n");
+			print ("Usage: tree-sitter-vala-codebase-test --codebase <path> [--exclude <pattern>] [--expect-fail <pattern>] [--log-file <path>] [--summary]\n");
 			return 77; // Standard Meson / Automake skip exit code
 		}
 
 		File dir = File.new_for_path (codebase_dir);
 		if (!dir.query_exists ()) {
-			stderr.printf ("Codebase directory '%s' does not exist. Skipping.\n", codebase_dir);
+			stderr.printf ("Error: Target codebase directory does not exist: %s\n", codebase_dir);
 			return 77;
 		}
 
@@ -69,13 +92,13 @@ public class CodebaseTester {
 		print ("Found %u .vala files to parse.\n", vala_files.length);
 
 		if (vala_files.length == 0) {
-			print ("No .vala files found in '%s'. Skipping.\n", codebase_dir);
+			print ("Warning: No .vala files found in target codebase.\n");
 			return 77;
 		}
 
 		var parser = new TreeSitter.Parser ();
 		if (!parser.set_language (TreeSitter.vala_language ())) {
-			stderr.printf ("Error: Failed to set tree-sitter-vala language on parser!\n");
+			stderr.printf ("Error: Failed to set parser language to Vala (ABI mismatch?)\n");
 			return 1;
 		}
 
@@ -93,19 +116,32 @@ public class CodebaseTester {
 		write_output_log ();
 		write_github_step_summary ();
 
-		return failed_parses > 0 ? 1 : 0;
+		if (failed_parses > 0 || unexpected_successes > 0) {
+			return 1;
+		}
+
+		return 0;
 	}
 
-	[CCode (cname = "g_pattern_spec_match_string")]
-	private static extern bool match_pattern (PatternSpec pspec, string str);
-
 	private bool is_excluded (string rel_path, bool is_dir) {
+		string path_to_match = rel_path;
+		if (is_dir && !path_to_match.has_suffix ("/")) {
+			path_to_match += "/";
+		}
+
 		for (uint i = 0; i < exclude_patterns.length; i++) {
-			unowned PatternSpec ps = exclude_patterns.get (i);
-			if (match_pattern (ps, rel_path)) {
+			unowned PatternSpec pattern = exclude_patterns.get (i);
+			if (pattern.match_string (path_to_match) || pattern.match_string (rel_path)) {
 				return true;
 			}
-			if (is_dir && match_pattern (ps, rel_path + "/")) {
+		}
+		return false;
+	}
+
+	private bool is_expected_to_fail (string rel_path) {
+		for (uint i = 0; i < expect_fail_patterns.length; i++) {
+			unowned PatternSpec pattern = expect_fail_patterns.get (i);
+			if (pattern.match_string (rel_path)) {
 				return true;
 			}
 		}
@@ -114,7 +150,7 @@ public class CodebaseTester {
 
 	private void scan_directory (File dir) {
 		try {
-			var enumerator = dir.enumerate_children (
+			FileEnumerator enumerator = dir.enumerate_children (
 				FileAttribute.STANDARD_NAME + "," + FileAttribute.STANDARD_TYPE,
 				FileQueryInfoFlags.NOFOLLOW_SYMLINKS
 			);
@@ -160,36 +196,66 @@ public class CodebaseTester {
 	private void parse_file (TreeSitter.Parser parser, string file_path) {
 		total_parsed++;
 		string rel_path = get_relative_path (file_path);
+		bool expected_fail = is_expected_to_fail (rel_path);
+		if (expected_fail) {
+			expected_fail_total++;
+		}
 
 		string source_code;
 		try {
 			FileUtils.get_contents (file_path, out source_code);
 		} catch (FileError e) {
-			failed_parses++;
-			error_details.add (new ErrorInfo (file_path, rel_path, 0, 0, "Could not read file: " + e.message));
+			if (expected_fail) {
+				expected_fail_passed++;
+			} else {
+				failed_parses++;
+				error_details.add (new ErrorInfo (file_path, rel_path, 0, 0, "Could not read file: " + e.message));
+			}
 			return;
 		}
 
 		TreeSitter.Tree? tree = parser.parse_string (source_code, null);
 		if (tree == null) {
-			failed_parses++;
-			error_details.add (new ErrorInfo (file_path, rel_path, 0, 0, "tree-sitter returned null tree"));
+			if (expected_fail) {
+				expected_fail_passed++;
+			} else {
+				failed_parses++;
+				error_details.add (new ErrorInfo (file_path, rel_path, 0, 0, "tree-sitter returned null tree"));
+			}
 			return;
 		}
 
 		TreeSitter.Node root = tree.root_node ();
 		if (root.has_error) {
-			failed_parses++;
-			TreeSitter.Node? first_err = find_first_error_node (root);
-			if (first_err != null) {
-				TreeSitter.Point pt = first_err.start_point;
-				string snippet = extract_snippet (source_code, pt.row, pt.column);
-				error_details.add (new ErrorInfo (file_path, rel_path, pt.row + 1, pt.column + 1, snippet));
+			if (expected_fail) {
+				// Expected to fail, and syntax error correctly detected!
+				expected_fail_passed++;
 			} else {
-				error_details.add (new ErrorInfo (file_path, rel_path, 1, 1, "has_error is true but no error node located"));
+				failed_parses++;
+				TreeSitter.Node? first_err = find_first_error_node (root);
+				if (first_err != null) {
+					TreeSitter.Point pt = first_err.start_point;
+					string snippet = extract_snippet (source_code, pt.row, pt.column);
+					error_details.add (new ErrorInfo (file_path, rel_path, pt.row + 1, pt.column + 1, snippet));
+				} else {
+					error_details.add (new ErrorInfo (file_path, rel_path, 1, 1, "has_error is true but no error node located"));
+				}
 			}
 		} else {
-			successful_parses++;
+			if (expected_fail) {
+				// Too lenient! It parsed cleanly when syntax error was expected.
+				unexpected_successes++;
+				error_details.add (new ErrorInfo (
+					file_path,
+					rel_path,
+					1,
+					1,
+					"UNEXPECTED SUCCESS: File was expected to fail parsing but parsed cleanly without syntax errors (grammar is too lenient).",
+					true
+				));
+			} else {
+				successful_parses++;
+			}
 		}
 	}
 
@@ -229,26 +295,37 @@ public class CodebaseTester {
 	}
 
 	private void print_report (double elapsed) {
-		double rate = total_parsed > 0 ? ((double) successful_parses / total_parsed) * 100.0 : 100.0;
+		uint regular_total = total_parsed - expected_fail_total;
+		double rate = regular_total > 0 ? ((double) successful_parses / regular_total) * 100.0 : 100.0;
 		print ("\n======================================================================\n");
 		print ("CODEBASE VALIDATION REPORT\n");
 		print ("======================================================================\n");
-		print ("Total files parsed  : %u\n", total_parsed);
-		print ("Successful parses   : %u\n", successful_parses);
-		print ("Failed parses       : %u\n", failed_parses);
-		print ("Success rate        : %.2f%%\n", rate);
-		print ("Elapsed time        : %.2fs (%.1f files/s)\n", elapsed, elapsed > 0 ? total_parsed / elapsed : 0);
+		print ("Total files parsed       : %u\n", total_parsed);
+		print ("Regular files parsed     : %u\n", regular_total);
+		print ("Successful parses        : %u\n", successful_parses);
+		print ("Unexpected syntax errors : %u\n", failed_parses);
+		print ("Success rate             : %.2f%%\n", rate);
+		if (expected_fail_total > 0) {
+			print ("Expected fail files      : %u\n", expected_fail_total);
+			print ("Expectedly failed        : %u\n", expected_fail_passed);
+			print ("Unexpected successes     : %u (too lenient)\n", unexpected_successes);
+		}
+		print ("Elapsed time             : %.2fs (%.1f files/s)\n", elapsed, elapsed > 0 ? total_parsed / elapsed : 0);
 		print ("======================================================================\n");
 
-		if (failed_parses > 0) {
-			print ("\nFailed files (%u total):\n", failed_parses);
+		if (failed_parses > 0 || unexpected_successes > 0) {
+			print ("\nFailures (%u total):\n", error_details.length);
 			uint display_count = error_details.length > 25 ? 25 : error_details.length;
 			for (uint i = 0; i < display_count; i++) {
 				ErrorInfo err = error_details.get (i);
-				print ("\n✗ %s:%u:%u\n", err.rel_path, err.row, err.col);
-				string[] snippet_lines = err.snippet.split ("\n");
-				foreach (unowned string sline in snippet_lines) {
-					print ("    %s\n", sline);
+				if (err.is_unexpected_success) {
+					print ("\n⚠️  UNEXPECTED SUCCESS: %s\n    %s\n", err.rel_path, err.snippet);
+				} else {
+					print ("\n✗ %s:%u:%u\n", err.rel_path, err.row, err.col);
+					string[] snippet_lines = err.snippet.split ("\n");
+					foreach (unowned string sline in snippet_lines) {
+						print ("    %s\n", sline);
+					}
 				}
 			}
 			if (error_details.length > display_count) {
@@ -264,22 +341,30 @@ public class CodebaseTester {
 
 		try {
 			var sb = new StringBuilder ();
-			double rate = total_parsed > 0 ? ((double) successful_parses / total_parsed) * 100.0 : 100.0;
+			uint regular_total = total_parsed - expected_fail_total;
+			double rate = regular_total > 0 ? ((double) successful_parses / regular_total) * 100.0 : 100.0;
 			sb.append ("# Codebase Validation Results\n\n");
 			sb.append_printf ("- **Target directory**: `%s`\n", codebase_dir);
 			sb.append_printf ("- **Total files**: %u\n", total_parsed);
+			sb.append_printf ("- **Regular files**: %u\n", regular_total);
 			sb.append_printf ("- **Passed**: %u\n", successful_parses);
 			sb.append_printf ("- **Failed**: %u\n", failed_parses);
+			if (expected_fail_total > 0) {
+				sb.append_printf ("- **Expected failure files**: %u\n", expected_fail_total);
+				sb.append_printf ("- **Correctly rejected**: %u\n", expected_fail_passed);
+				sb.append_printf ("- **Unexpected passes (too lenient)**: %u\n", unexpected_successes);
+			}
 			sb.append_printf ("- **Success Rate**: %.2f%%\n\n", rate);
 
-			if (failed_parses > 0) {
+			if (error_details.length > 0) {
 				sb.append ("## Failing Files Details\n\n");
-				sb.append ("| File | Line | Snippet |\n");
-				sb.append ("| :--- | :---: | :--- |\n");
+				sb.append ("| File | Type | Line | Details |\n");
+				sb.append ("| :--- | :---: | :---: | :--- |\n");
 				for (uint i = 0; i < error_details.length; i++) {
 					ErrorInfo err = error_details.get (i);
 					string escaped = err.snippet.replace ("|", "\\|").replace ("\n", "<br>");
-					sb.append_printf ("| `%s` | %u:%u | `<pre>%s</pre>` |\n", err.rel_path, err.row, err.col, escaped);
+					string kind = err.is_unexpected_success ? "Too Lenient (Pass)" : "Syntax Error";
+					sb.append_printf ("| `%s` | %s | %u:%u | `<pre>%s</pre>` |\n", err.rel_path, kind, err.row, err.col, escaped);
 				}
 			}
 
@@ -303,19 +388,26 @@ public class CodebaseTester {
 
 		try {
 			var sb = new StringBuilder ();
-			double rate = total_parsed > 0 ? ((double) successful_parses / total_parsed) * 100.0 : 100.0;
+			uint regular_total = total_parsed - expected_fail_total;
+			double rate = regular_total > 0 ? ((double) successful_parses / regular_total) * 100.0 : 100.0;
 			sb.append ("### 🌳 Tree-sitter Vala Codebase Validation Report\n\n");
 			sb.append_printf ("Parsed **%u** files in `%s` with **%.2f%%** success (%u passed, %u failed).\n\n",
-				total_parsed, codebase_dir, rate, successful_parses, failed_parses);
+				regular_total, codebase_dir, rate, successful_parses, failed_parses);
 
-			if (failed_parses > 0) {
-				sb.append_printf ("<details><summary><b>Detailed Error List (%u failures)</b></summary>\n\n", failed_parses);
-				sb.append ("| File | Line | Snippet |\n");
-				sb.append ("| :--- | :---: | :--- |\n");
+			if (expected_fail_total > 0) {
+				sb.append_printf ("- Negative test files checked: **%u** (correctly rejected: **%u**, unexpected passes: **%u**)\n\n",
+					expected_fail_total, expected_fail_passed, unexpected_successes);
+			}
+
+			if (error_details.length > 0) {
+				sb.append_printf ("<details><summary><b>Detailed Error List (%u items)</b></summary>\n\n", error_details.length);
+				sb.append ("| File | Type | Line | Details |\n");
+				sb.append ("| :--- | :---: | :---: | :--- |\n");
 				for (uint i = 0; i < error_details.length; i++) {
 					ErrorInfo err = error_details.get (i);
 					string escaped = err.snippet.replace ("|", "\\|").replace ("\n", "<br>");
-					sb.append_printf ("| `%s` | %u:%u | `<pre>%s</pre>` |\n", err.rel_path, err.row, err.col, escaped);
+					string kind = err.is_unexpected_success ? "Too Lenient (Pass)" : "Syntax Error";
+					sb.append_printf ("| `%s` | %s | %u:%u | `<pre>%s</pre>` |\n", err.rel_path, kind, err.row, err.col, escaped);
 				}
 				sb.append ("\n</details>\n");
 			}
@@ -346,6 +438,8 @@ int main (string[] args) {
 			app.log_file = args[++i];
 		} else if ((args[i] == "--exclude" || args[i] == "-e") && i + 1 < args.length) {
 			app.add_exclude_pattern (args[++i]);
+		} else if ((args[i] == "--expect-fail" || args[i] == "--negative" || args[i] == "-x") && i + 1 < args.length) {
+			app.add_expect_fail_pattern (args[++i]);
 		} else if (!args[i].has_prefix ("-")) {
 			app.codebase_dir = args[i];
 		}

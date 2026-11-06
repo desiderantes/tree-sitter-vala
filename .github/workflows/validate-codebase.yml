@@ -64,11 +64,7 @@ jobs:
           ./build/tree-sitter-vala-codebase-test \
             --codebase target-codebase \
             --log-file build/codebase-failures.md \
-            --summary \
-            --exclude "*preprocessor*.vala" \
-            --exclude "*/bug647018.vala" \
-            --exclude "*/fixed-length-init0-not-allowed.vala" \
-            --exclude "*/statement-keyword-as-identifier.vala" 
+            --summary
 
       - name: Upload Failure Log Artifact
         uses: actions/upload-artifact@v7

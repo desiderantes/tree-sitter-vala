@@ -798,8 +798,32 @@ module.exports = grammar({
       $._statement_without_if
     ),
 
+    _statement_keyword: $ => choice(
+      "if",
+      "switch",
+      "while",
+      "do",
+      "for",
+      "foreach",
+      "return",
+      "throw",
+      "try",
+      "lock",
+      "unlock",
+      "delete",
+      "with",
+    ),
+
+    keyword_assignment_statement: $ => prec(1, seq(
+      alias($._statement_keyword, $.identifier),
+      field("operator", $._assignment_operator),
+      field("right", $._expression),
+      ";"
+    )),
+
     // resolves ambiguities with 'else if'
     _statement_without_if: $ => choice(
+      $.keyword_assignment_statement,
       $.block,
       $.empty_statement,
       $.expression_statement,
@@ -812,6 +836,7 @@ module.exports = grammar({
       $.break_statement,
       $.continue_statement,
       $.lock_statement,
+      $.unlock_statement,
       $.delete_statement,
       $.throw_statement,
       $.yield_statement,
@@ -904,6 +929,11 @@ module.exports = grammar({
     lock_statement: $ => seq(
       'lock', '(', $._expression, ')',
       $._statement
+    ),
+
+    unlock_statement: $ => seq(
+      'unlock', '(', $._expression, ')',
+      ';'
     ),
 
     delete_statement: $ => seq(

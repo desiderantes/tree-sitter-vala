@@ -1015,3 +1015,74 @@ void main () {
                   (identifier))
                 (literal
                   (integer))))))))))
+
+=======================================
+Statement keywords used as identifiers
+=======================================
+
+void main () {
+    int if = 1;
+    if = 2;
+    int while;
+    while = 3;
+    int return = 4;
+    return = 5;
+    int delete = 6;
+    delete = 7;
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      type: (type)
+      name: (symbol
+        (identifier))
+      body: (block
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (literal
+              (integer))))
+        (keyword_assignment_statement
+          (identifier)
+          right: (literal
+            (integer)))
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)))
+        (keyword_assignment_statement
+          (identifier)
+          right: (literal
+            (integer)))
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (literal
+              (integer))))
+        (keyword_assignment_statement
+          (identifier)
+          right: (literal
+            (integer)))
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (literal
+              (integer))))
+        (keyword_assignment_statement
+          (identifier)
+          right: (literal
+            (integer)))))))
