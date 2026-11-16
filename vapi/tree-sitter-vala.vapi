@@ -3,7 +3,7 @@ namespace TreeSitter {
 	public static unowned ValaLanguage vala_language ();
 
 	[Compact]
-	[CCode (cname = "const TSLanguage", has_type_id = false, free_function = "ts_language_delete", cheader_filename = "tree_sitter/parser.h")]
+	[CCode (cname = "const TSLanguage", has_type_id = false, free_function = "ts_language_delete", cheader_filename = "tree-sitter-vala/parser.h")]
 	public class ValaLanguage : Language {
 		public uint32 abi_version;
 		public uint32 symbol_count;
@@ -55,36 +55,36 @@ namespace TreeSitter {
 	}
 
 	namespace ParserInternals {
-		[CCode (cname = "TREE_SITTER_SERIALIZATION_BUFFER_SIZE", cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "TREE_SITTER_SERIALIZATION_BUFFER_SIZE", cheader_filename = "tree-sitter-vala/parser.h")]
 		public const int SERIALIZATION_BUFFER_SIZE;
 
-		[CCode (cname = "ts_builtin_sym_error", cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "ts_builtin_sym_error", cheader_filename = "tree-sitter-vala/parser.h")]
 		public const Symbol BUILTIN_SYM_ERROR;
 
-		[CCode (cname = "ts_builtin_sym_end", cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "ts_builtin_sym_end", cheader_filename = "tree-sitter-vala/parser.h")]
 		public const Symbol BUILTIN_SYM_END;
 
-		[CCode (cname = "TSFieldMapEntry", has_type_id = false, cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "TSFieldMapEntry", has_type_id = false, cheader_filename = "tree-sitter-vala/parser.h")]
 		public struct FieldMapEntry {
 			public FieldId field_id;
 			public uint8 child_index;
 			public bool inherited;
 		}
 
-		[CCode (cname = "TSMapSlice", has_type_id = false, cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "TSMapSlice", has_type_id = false, cheader_filename = "tree-sitter-vala/parser.h")]
 		public struct MapSlice {
 			public uint16 index;
 			public uint16 length;
 		}
 
-		[CCode (cname = "TSSymbolMetadata", has_type_id = false, cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "TSSymbolMetadata", has_type_id = false, cheader_filename = "tree-sitter-vala/parser.h")]
 		public struct SymbolMetadata {
 			public bool visible;
 			public bool named;
 			public bool supertype;
 		}
 
-		[CCode (cname = "TSParseActionType", cprefix = "TSParseActionType", has_type_id = false, cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "TSParseActionType", cprefix = "TSParseActionType", has_type_id = false, cheader_filename = "tree-sitter-vala/parser.h")]
 		public enum ParseActionType {
 			Shift,
 			Reduce,
@@ -92,13 +92,13 @@ namespace TreeSitter {
 			Recover
 		}
 
-		[CCode (cname = "TSCharacterRange", has_type_id = false, cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "TSCharacterRange", has_type_id = false, cheader_filename = "tree-sitter-vala/parser.h")]
 		public struct CharacterRange {
 			public int32 start;
 			public int32 end;
 		}
 
-		[CCode (cname = "TSLexer", has_type_id = false, cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "TSLexer", has_type_id = false, cheader_filename = "tree-sitter-vala/parser.h")]
 		[Compact]
 		public class Lexer {
 			public int32 lookahead;
@@ -126,21 +126,21 @@ namespace TreeSitter {
 			public delegate bool EofFunc (Lexer lexer);
 		}
 
-		[CCode (cname = "set_contains", cheader_filename = "tree_sitter/parser.h")]
+		[CCode (cname = "set_contains", cheader_filename = "tree-sitter-vala/parser.h")]
 		public static bool set_contains ([CCode (array_length_pos = 1.1, array_length_type = "uint32_t")] CharacterRange[] ranges, int32 lookahead);
 	}
 
 	namespace Allocator {
-		[CCode (cname = "ts_malloc", cheader_filename = "tree_sitter/alloc.h")]
+		[CCode (cname = "ts_malloc", cheader_filename = "tree-sitter-vala/alloc.h")]
 		public static void* malloc (size_t size);
 
-		[CCode (cname = "ts_calloc", cheader_filename = "tree_sitter/alloc.h")]
+		[CCode (cname = "ts_calloc", cheader_filename = "tree-sitter-vala/alloc.h")]
 		public static void* calloc (size_t count, size_t size);
 
-		[CCode (cname = "ts_realloc", cheader_filename = "tree_sitter/alloc.h")]
+		[CCode (cname = "ts_realloc", cheader_filename = "tree-sitter-vala/alloc.h")]
 		public static void* realloc (void* ptr, size_t size);
 
-		[CCode (cname = "ts_free", cheader_filename = "tree_sitter/alloc.h")]
+		[CCode (cname = "ts_free", cheader_filename = "tree-sitter-vala/alloc.h")]
 		public static void free (void* ptr);
 	}
 }

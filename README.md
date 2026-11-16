@@ -26,6 +26,7 @@ This project uses the Meson build system.
 - `tree-sitter` (>= 0.25.0)
 - `glib-2.0`
 - `gio-2.0`
+- `tree-sitter-cli` & `nodejs` *(required when building from a git checkout or running the `corpus` test; release tarballs generated via `meson dist` ship pre-generated `src/` artifacts and only need a C and Vala compiler)*
 
 ### Build
 
@@ -80,17 +81,10 @@ Parameters:
 
 ## Grammar Development Workflow
 
-1. Edit `grammar.js`
-2. Regenerate parser using the Meson target:
+1. Edit `grammar.js` (and corpus tests under `test/corpus/`).
+2. Build and run tests (Ninja automatically regenerates the parser into the build directory whenever `grammar.js` or `tree-sitter.json` changes):
    ```bash
-   ninja -C build generate
-   # or
-   meson compile -C build generate
-   ```
-   *(This automatically executes `tree-sitter generate --abi 15` and refreshes `src/` artifacts.)*
-3. Run tests:
-   ```bash
-   meson test -C build
+   meson test -C build --verbose
    ```
 
 You can also use `tree-sitter parse <file>` and `tree-sitter highlight <file>` to inspect syntax trees and token

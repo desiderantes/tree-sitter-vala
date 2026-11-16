@@ -341,7 +341,7 @@ module.exports = grammar({
     ),
     template_string_expression: $ => choice(
       seq('$(', $._expression, ')'),
-      seq('$', $.identifier)
+      seq('$', alias(token.immediate(/[A-Za-z_]\w*/), $.identifier))
     ),
     verbatim_string: $ => token(seq(
       '"""',
