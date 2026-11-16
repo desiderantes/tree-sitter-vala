@@ -155,6 +155,7 @@
  "or"
  "sizeof"
  "typeof"
+ "unlock"
 ] @keyword.operator
 
 "using" @include

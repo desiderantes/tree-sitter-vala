@@ -1086,3 +1086,353 @@ void main () {
           (identifier)
           right: (literal
             (integer)))))))
+
+=========================================================
+Lock, unlock, and statement keyword expression statements
+=========================================================
+
+void main () {
+    lock (mutex) {
+        unlock (mutex);
+    }
+    lock (mutex);
+    unlock (mutex);
+    lock = 1;
+    unlock = 2;
+    lock ();
+    unlock ();
+    if ();
+    lock++;
+    unlock++;
+    return++;
+    lock.foo ();
+    unlock.foo ();
+    unlock[0] = 2;
+    lock[0].bar ();
+    unlock ().baz ();
+    return ++x;
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      type: (type)
+      name: (symbol
+        (identifier))
+      body: (block
+        (lock_statement
+          (member_access_expression
+            (identifier))
+          (block
+            (unlock_statement
+              (member_access_expression
+                (identifier)))))
+        (lock_statement
+          (member_access_expression
+            (identifier))
+          (empty_statement))
+        (unlock_statement
+          (member_access_expression
+            (identifier)))
+        (keyword_assignment_statement
+          (identifier)
+          right: (literal
+            (integer)))
+        (keyword_assignment_statement
+          (identifier)
+          right: (literal
+            (integer)))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))))
+        (expression_statement
+          (postfix_expression
+            (member_access_expression
+              (identifier))))
+        (expression_statement
+          (postfix_expression
+            (member_access_expression
+              (identifier))))
+        (expression_statement
+          (postfix_expression
+            (member_access_expression
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (member_access_expression
+                (identifier))
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (member_access_expression
+                (identifier))
+              (identifier))))
+        (expression_statement
+          (assignment_expression
+            left: (element_access_expression
+              (member_access_expression
+                (identifier))
+              (element_access
+                (literal
+                  (integer))))
+            right: (literal
+              (integer))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (element_access_expression
+                (member_access_expression
+                  (identifier))
+                (element_access
+                  (literal
+                    (integer))))
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (method_call_expression
+                function: (member_access_expression
+                  (identifier)))
+              (identifier))))
+        (return_statement
+          (prefix_expression
+            (member_access_expression
+              (identifier))))))))
+
+========================================================
+Callable and chained statement keywords as identifiers
+========================================================
+
+void main () {
+    switch (1);
+    do (1, 2);
+    foreach (1);
+    try (1);
+    void = 2;
+    void ();
+    void (1);
+    static = 2;
+    extern ();
+    if (1).bar ();
+    lock (1).bar ();
+    with (1).bar ();
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      type: (type)
+      name: (symbol
+        (identifier))
+      body: (block
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))
+            argument: (argument
+              (literal
+                (integer)))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))
+            argument: (argument
+              (literal
+                (integer)))
+            argument: (argument
+              (literal
+                (integer)))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))
+            argument: (argument
+              (literal
+                (integer)))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))
+            argument: (argument
+              (literal
+                (integer)))))
+        (keyword_assignment_statement
+          (identifier)
+          right: (literal
+            (integer)))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))
+            argument: (argument
+              (literal
+                (integer)))))
+        (keyword_assignment_statement
+          (identifier)
+          right: (literal
+            (integer)))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (method_call_expression
+                function: (member_access_expression
+                  (identifier))
+                argument: (argument
+                  (literal
+                    (integer))))
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (method_call_expression
+                function: (member_access_expression
+                  (identifier))
+                argument: (argument
+                  (literal
+                    (integer))))
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (method_call_expression
+                function: (member_access_expression
+                  (identifier))
+                argument: (argument
+                  (literal
+                    (integer))))
+              (identifier))))))))
+
+===================================================
+Logical and declaration keywords used as identifiers
+===================================================
+
+void test_logical_keywords () {
+    int not = 1;
+    int is = 2;
+    int in = 3;
+    not = 4;
+    int x = not;
+    not ();
+    not++;
+    not.foo ();
+    bool a = not true;
+    bool b = x is not Foo;
+    bool c = x not in y;
+}
+
+---
+
+(source_file
+  (namespace_member
+    (method_declaration
+      type: (type)
+      name: (symbol
+        (identifier))
+      body: (block
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (literal
+              (integer))))
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (literal
+              (integer))))
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (literal
+              (integer))))
+        (expression_statement
+          (assignment_expression
+            left: (member_access_expression
+              (identifier))
+            right: (literal
+              (integer))))
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (member_access_expression
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (identifier))))
+        (expression_statement
+          (postfix_expression
+            (member_access_expression
+              (identifier))))
+        (expression_statement
+          (method_call_expression
+            function: (member_access_expression
+              (member_access_expression
+                (identifier))
+              (identifier))))
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (logical_negation_expression
+              (literal
+                (boolean)))))
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (type_relational_expression
+              (member_access_expression
+                (identifier))
+              (type
+                (symbol
+                  (identifier))))))
+        (local_declaration
+          type: (type
+            (symbol
+              (identifier)))
+          declarator: (assignment
+            name: (identifier)
+            value: (in_expression
+              (member_access_expression
+                (identifier))
+              (member_access_expression
+                (identifier)))))))))

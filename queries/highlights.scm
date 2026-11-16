@@ -98,6 +98,7 @@
  "throws"
  "try"
  "typeof"
+ "unlock"
  "unowned"
  "using"
  "virtual"

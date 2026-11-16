@@ -147,7 +147,7 @@ module.exports = grammar({
         ),
         'global::'
       )),
-      choice($.identifier, $.parameter_direction_modifier),
+      choice($.identifier, $.parameter_direction_modifier, alias('not', $.identifier)),
       optional($.type_arguments)
     ),
 
@@ -206,7 +206,10 @@ module.exports = grammar({
     arithmetic_negation_expression: $ => prec.right(14, seq('-', $._left_contained_expression)),
     prefix_expression: $ => prec.right(14, seq(choice('++', '--'), $._left_contained_expression)),
     bitwise_negation_expression: $ => prec.right(14, seq('~', $._left_contained_expression)),
-    logical_negation_expression: $ => prec.right(14, seq(choice('!', 'not'), $._left_contained_expression)),
+    logical_negation_expression: $ => choice(
+      prec.right(14, seq('!', $._left_contained_expression)),
+      seq('not', $._left_contained_expression)
+    ),
     _unary_expression: $ => prec.right(14, choice(
         $.dereferencing_expression,
         $.addressof_expression,
@@ -786,7 +789,10 @@ module.exports = grammar({
     ),
 
     assignment: $ => prec.dynamic(20, seq(
-      field('name', $.identifier),
+      field('name', choice(
+        $.identifier,
+        alias(choice('and', 'as', 'in', 'is', 'not', 'or'), $.identifier)
+      )),
       optional(field('array_dimension', $.inline_array_type)),
       optional(seq('=', field('value', $._expression)))
     )),
@@ -798,20 +804,136 @@ module.exports = grammar({
       $._statement_without_if
     ),
 
-    _statement_keyword: $ => choice(
-      "if",
-      "switch",
-      "while",
-      "do",
+    _empty_only_callable_statement_keyword: $ => choice(
       "for",
+      "unlock",
+    ),
+
+    _chainable_arg_statement_keyword: $ => choice(
+      "if",
+      "while",
+      "lock",
+      "with",
+    ),
+
+    _any_callable_statement_keyword: $ => choice(
+      "switch",
+      "do",
       "foreach",
+      "try",
+      "void",
+      "static",
+      "extern",
+    ),
+
+    _non_callable_statement_keyword: $ => choice(
       "return",
       "throw",
-      "try",
-      "lock",
-      "unlock",
       "delete",
-      "with",
+    ),
+
+    _statement_keyword: $ => choice(
+      $._empty_only_callable_statement_keyword,
+      $._chainable_arg_statement_keyword,
+      $._any_callable_statement_keyword,
+      $._non_callable_statement_keyword,
+    ),
+
+    _keyword_identifier: $ => alias($._statement_keyword, $.identifier),
+
+    _empty_only_callable_keyword_identifier: $ => alias($._empty_only_callable_statement_keyword, $.identifier),
+
+    _chainable_arg_keyword_identifier: $ => alias($._chainable_arg_statement_keyword, $.identifier),
+
+    _any_callable_keyword_identifier: $ => alias($._any_callable_statement_keyword, $.identifier),
+
+    _kw_base_member_access: $ => seq(
+      alias($._keyword_identifier, $.member_access_expression),
+      choice('.', '?.', '->'),
+      choice($.identifier, $.parameter_direction_modifier, alias('not', $.identifier)),
+      optional($.type_arguments)
+    ),
+
+    _kw_chained_member_access: $ => seq(
+      choice($._keyword_contained_expression, $._kw_chainable_arg_call),
+      choice('.', '?.', '->'),
+      choice($.identifier, $.parameter_direction_modifier, alias('not', $.identifier)),
+      optional($.type_arguments)
+    ),
+
+    _kw_base_element_access: $ => seq(
+      alias($._keyword_identifier, $.member_access_expression),
+      $.element_access
+    ),
+
+    _kw_chained_element_access: $ => seq(
+      choice($._keyword_contained_expression, $._kw_chainable_arg_call),
+      $.element_access
+    ),
+
+    _kw_empty_call: $ => seq(
+      field('function', alias(choice($._empty_only_callable_keyword_identifier, $._chainable_arg_keyword_identifier), $.member_access_expression)),
+      '(',
+      ')'
+    ),
+
+    _kw_any_call: $ => seq(
+      field('function', alias($._any_callable_keyword_identifier, $.member_access_expression)),
+      '(',
+      comma_sep(field('argument', $.argument)),
+      ')',
+      optional(field('initializer', $.object_initializers))
+    ),
+
+    _kw_chainable_arg_call_base: $ => seq(
+      field('function', alias($._chainable_arg_keyword_identifier, $.member_access_expression)),
+      '(',
+      comma_sep1(field('argument', $.argument)),
+      ')',
+      optional(field('initializer', $.object_initializers))
+    ),
+
+    _kw_chainable_arg_call: $ => alias($._kw_chainable_arg_call_base, $.method_call_expression),
+
+    _kw_chained_call: $ => seq(
+      field('function', choice($._keyword_contained_expression, $._kw_chainable_arg_call)),
+      '(',
+      comma_sep(field('argument', $.argument)),
+      ')',
+      optional(field('initializer', $.object_initializers))
+    ),
+
+    _kw_base_postfix: $ => seq(
+      alias($._keyword_identifier, $.member_access_expression),
+      choice('++', '--')
+    ),
+
+    _kw_chained_postfix: $ => prec.left(15, seq(
+      choice($._keyword_contained_expression, $._kw_chainable_arg_call),
+      choice('++', '--')
+    )),
+
+    _kw_assignment: $ => prec.right(1, seq(
+      field('left', choice($._keyword_contained_expression, $._kw_chainable_arg_call)),
+      field('operator', $._assignment_operator),
+      field('right', $._expression)
+    )),
+
+    _keyword_contained_expression: $ => choice(
+      alias($._kw_base_member_access, $.member_access_expression),
+      alias($._kw_chained_member_access, $.member_access_expression),
+      alias($._kw_base_element_access, $.element_access_expression),
+      alias($._kw_chained_element_access, $.element_access_expression),
+      alias($._kw_empty_call, $.method_call_expression),
+      alias($._kw_any_call, $.method_call_expression),
+      alias($._kw_chained_call, $.method_call_expression),
+      alias($._kw_base_postfix, $.postfix_expression),
+      alias($._kw_chained_postfix, $.postfix_expression),
+    ),
+
+    _keyword_expression: $ => choice(
+      $._keyword_contained_expression,
+      alias($._kw_assignment, $.assignment_expression),
     ),
 
     keyword_assignment_statement: $ => prec(1, seq(
@@ -846,7 +968,7 @@ module.exports = grammar({
 
     empty_statement: $ => ';',
 
-    expression_statement: $ => seq($._expression, ';'),
+    expression_statement: $ => seq(choice($._expression, $._keyword_expression), ';'),
 
     return_statement: $ => seq('return', optional($._expression), ';'),
 
@@ -1063,7 +1185,24 @@ module.exports = grammar({
     [$.initializer, $.block],                                           // because {} is ambiguous in statement-expression contexts
     [$.if_statement],                                                   // because of ambiguity with nested if statements
     [$._expression, $._left_contained_expression],
-    [$._expression, $._left_contained_expression, $.element_access_expression]
+    [$._expression, $._left_contained_expression, $.element_access_expression],
+    [$.member_access_expression, $.logical_negation_expression],
+    [$._empty_only_callable_statement_keyword, $.for_statement],
+    [$._empty_only_callable_statement_keyword, $.unlock_statement],
+    [$._chainable_arg_statement_keyword, $.if_statement],
+    [$._chainable_arg_statement_keyword, $.elseif_statement],
+    [$._chainable_arg_statement_keyword, $.while_statement],
+    [$._chainable_arg_statement_keyword, $.lock_statement],
+    [$._chainable_arg_statement_keyword, $.with_statement],
+    [$._any_callable_statement_keyword, $.switch_statement],
+    [$._any_callable_statement_keyword, $.foreach_statement],
+    [$._any_callable_statement_keyword, $.do_statement],
+    [$._any_callable_statement_keyword, $.type],
+    [$._any_callable_statement_keyword, $.local_function_declaration],
+    [$._any_callable_statement_keyword, $.member_declaration_modifier],
+    [$._non_callable_statement_keyword, $.return_statement],
+    [$._non_callable_statement_keyword, $.throw_statement],
+    [$._non_callable_statement_keyword, $.delete_statement]
   ],
 
   extras: $ => [
